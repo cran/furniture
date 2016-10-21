@@ -2,7 +2,7 @@
 % Please edit documentation in R/Table1.R
 \name{table1}
 \alias{table1}
-\title{Table 1 for Health, Behavioral, and Social Scientists}
+\title{Table 1 for Simple and Stratified Descriptive Statistics}
 \usage{
 table1(.data, ..., splitby = NULL, splitby_labels = NULL, test = FALSE,
   test_type = "default", piping = FALSE, rounding = 3, var_names = NULL,
@@ -30,17 +30,17 @@ table1(.data, ..., splitby = NULL, splitby_labels = NULL, test = FALSE,
 
 \item{format_output}{has three options: 1) "full" provides the table with the type of test, test statistic, and the p-value for each variable; 2) "pvalues" provides the table with the p-values; and 3) "stars" provides the table with stars indicating significance}
 
-\item{output_type}{default is "text"; the other option is "latex" which uses the \code{kable()} function in \code{knitr}}
+\item{output_type}{default is "text"; the other options are all format options in the \code{kable()} function in \code{knitr} (e.g., latex, html, markdown, pandoc)}
 
 \item{NAkeep}{when sset to \code{TRUE} it also shows how many missing values are in the data for each categorical variable being summarized}
 
 \item{m_label}{when \code{NAkeep = TRUE} this provides a label for the missing values in the table}
 
-\item{booktabs}{when \code{output_type = "latex"}; option is passed to \code{knitr::kable}}
+\item{booktabs}{when \code{output_type != "text"}; option is passed to \code{knitr::kable}}
 
-\item{caption}{when \code{output_type = "latex"}; option is passed to \code{knitr::kable}}
+\item{caption}{when \code{output_type != "text"}; option is passed to \code{knitr::kable}}
 
-\item{align}{when \code{output_type = "latex"}; option is passed to \code{knitr::kable}}
+\item{align}{when \code{output_type != "text"}; option is passed to \code{knitr::kable}}
 }
 \value{
 A table with the number of observations, means/frequencies and standard deviations/percentages is returned. The object is a \code{table1} class object with a print method. Can be printed in \code{LaTex} form.
@@ -52,32 +52,37 @@ It is well-formatted for easy transition to academic article or report.
 Can be used within the piping framework [see library(magrittr)].
 }
 \examples{
-## Data from MASS package ##
-library(MASS)
-data("birthwt")
-library(dplyr)
-b = mutate(.data=birthwt,
-           smoke = as.factor(smoke),
-           race  = as.factor(race),
-           ht    = as.factor(ht),
-           ui    = as.factor(ui))
-levels(b$race) = c("white", "black", "other")
-
+## Ficticious Data ##
 library(furniture)
+library(dplyr)
 
-table1(b, age, race, smoke, ptl, ht, ui, ftv, NAkeep=TRUE)
-table1(b, age, race, smoke, ptl, ht, ui, ftv,
-       splitby=~factor(low),
-       NAkeep=TRUE)
-       
-b$low = as.factor(b$low)
-table1(b, age, race, smoke, ptl, ht, ui, ftv,
-       splitby=~low,
-       test=TRUE,
-       var_names = c("Age", "Race", "Smoking Status", "Previous Premature Labors", "Hypertension",
-                     "Uterine Irratibility", "Physician Visits"),
-       splitby_labels = c("Regular Birthweight", "Low Birthweight"))
-       
+x  <- runif(1000)
+y  <- rnorm(1000)
+z  <- factor(sample(c(0,1), 1000, replace=TRUE))
+a  <- factor(sample(c(1,2), 1000, replace=TRUE))
+df <- data.frame(x, y, z, a)
+
+## Simple
+table1(df, x, y, z, a)
+
+## Stratified
+## both below are the same
+table1(df, x, y, z,
+       splitby = ~ a)
+table1(df, x, y, z,
+       splitby = "a")
+
+## With Piping
+df \%>\%
+  table1(x, y, z, 
+         splitby = ~a, 
+         piping = TRUE) \%>\%
+  summarise(count = n())
+
+## Adjust variables within function
+table1(df, ifelse(x > 0, 1, 0), z,
+       var_names = c("Dich X", "Z"))
+         
 
 }
 

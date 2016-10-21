@@ -1,0 +1,49 @@
+#' furniture
+#' 
+#' The furniture package offers simple functions (i.e. pieces of furniture) and an 
+#' operator that are aimed at helping applied researchers explore and communicate 
+#' their data as well as clean their data in a tidy way. The package follows similar 
+#' semantics to the "tidyverse" packages. It contains two main tools (along with an 
+#' operator):
+#' \itemize{
+#'   \item \code{table1} provides a well-formatted descriptive table often seen 
+#'         as table 1 in academic journals,
+#'   \item \code{washer} provides a simple way to clean up data where there are placeholder
+#'         values, and
+#'   \item \code{\%xt\%} is an operator that takes two factor variables and creates a cross tabulation and
+#'         tests for significance via a chi-square test.
+#' }
+#' 
+#' Table 1 is the main function in furniture. It is useful in both data exploration 
+#' and data communication. With minimal cleaning, the outputted table can be put into 
+#' an academic, peer reviewed journal manuscript. As such, it is very useful in exploring
+#' your data when you have a stratifying variable. For example, if you are exploring whether
+#' the means of several demographic and behavioral characteristics are related to a health condition,
+#' the health condition (i.e. "yes" or "no"; "low", "mid", or "high"; or a list of conditions) as
+#' the stratifying variable. With little code, you can test for associations and check means or 
+#' counts by the stratifying variable. See the vignette for more information. 
+#' 
+#' 
+#' @examples
+#' \dontrun{
+#' 
+#' library(furniture)
+#' 
+#' ## Table 1
+#' data %>%
+#'   table1(var1, var2, var3, 
+#'          splitby = ~groupvar,
+#'          test = TRUE)
+#' 
+#' ## Washer
+#' x = washer(x, 7, 8, 9)
+#' x = washer(x, is.na, value=0)
+#' 
+#' ## Crosstabs Operator
+#' f1 %xt% f2
+#' 
+#' }
+#' 
+#' @docType package
+#' @name furniture
+NULL
