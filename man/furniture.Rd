@@ -13,7 +13,8 @@ semantics to the "tidyverse" packages. It contains two main tools (along with an
 operator):
 \itemize{
   \item \code{table1} provides a well-formatted descriptive table often seen 
-        as table 1 in academic journals,
+        as table 1 in academic journals (also a version that simplifies the output is 
+        available as \code{simple_table1}),
   \item \code{washer} provides a simple way to clean up data where there are placeholder
         values, and
   \item \code{\%xt\%} is an operator that takes two factor variables and creates a cross tabulation and
@@ -29,6 +30,9 @@ the means of several demographic and behavioral characteristics are related to a
 the health condition (i.e. "yes" or "no"; "low", "mid", or "high"; or a list of conditions) as
 the stratifying variable. With little code, you can test for associations and check means or 
 counts by the stratifying variable. See the vignette for more information.
+
+Note: furniture is meant to make life more comfortable and beautiful. In like manner, this package
+is designed to be "furniture" for quantitative research.
 }
 \examples{
 \dontrun{
@@ -40,6 +44,11 @@ data \%>\%
   table1(var1, var2, var3, 
          splitby = ~groupvar,
          test = TRUE)
+
+data \%>\%
+  simple_table1(var1, var2, var3,
+                splitby = ~groupvar,
+                test = TRUE)
 
 ## Washer
 x = washer(x, 7, 8, 9)

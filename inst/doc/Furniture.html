@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-10-20" />
+<meta name="date" content="2016-11-15" />
 
 <title>Furniture</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Furniture</h1>
-<h4 class="date"><em>2016-10-20</em></h4>
+<h4 class="date"><em>2016-11-15</em></h4>
 
 
 
@@ -88,15 +88,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="washer" class="section level2">
 <h2>Washer</h2>
 <p><code>washer</code> is a great function for quick data cleaning. In situations where there are placeholders, extra levels in a factor, or several values need to be changed to another.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)</code></pre></div>
-<pre><code>## 
-## Attaching package: 'dplyr'</code></pre>
-<pre><code>## The following objects are masked from 'package:stats':
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)</code></pre></div>
+<pre><code>## Loading tidyverse: ggplot2
+## Loading tidyverse: tibble
+## Loading tidyverse: tidyr
+## Loading tidyverse: readr
+## Loading tidyverse: purrr
+## Loading tidyverse: dplyr</code></pre>
+<pre><code>## Warning: package 'ggplot2' was built under R version 3.3.2</code></pre>
+<pre><code>## Conflicts with tidy packages ----------------------------------------------</code></pre>
+<pre><code>## filter(): dplyr, stats
+## lag():    dplyr, stats</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span>df %&gt;%
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">d =</span> <span class="kw">washer</span>(d, -<span class="dv">99</span>),  ## changes the placeholder -99 to NA
          <span class="dt">c =</span> <span class="kw">washer</span>(c, <span class="st">&quot;Other&quot;</span>, <span class="st">&quot;None&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;control&quot;</span>)) ## changes &quot;Other&quot; and &quot;None&quot; to &quot;Control&quot;</code></pre></div>
@@ -106,51 +108,51 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Now that the data is “washed” we can start exploring and reporting.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, <span class="kw">factor</span>(c), d)</code></pre></div>
 <pre><code>## 
-## |==================================
+## |=====================================
 ##               Mean/Count (SD/%)
 ##  Observations 100              
 ##  a                             
-##               1.58 (1.75)      
+##               1.69 (2.00)      
 ##  b                             
-##               50.5 (29.01)     
+##               50.50 (29.01)    
 ##  factor(c)                     
-##     control   50 (50%)         
-##     treatment 50 (50%)         
+##     control   50 (50.00%)      
+##     treatment 50 (50.00%)      
 ##  d                             
-##               460 (300.01)     
-## |==================================</code></pre>
+##               429.76 (295.97)  
+## |=====================================</code></pre>
 <p>The variables must be numeric or factor. Since we use a special type of evaluation (i.e. Non-Standard Evaluation) we can change the variables in the function (e.g., <code>factor(c)</code>). This can be extended to making a whole new variable in the function as well.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a &gt;<span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</code></pre></div>
 <pre><code>## 
-## |=========================================
+## |============================================
 ##                      Mean/Count (SD/%)
 ##  Observations        100              
 ##  a                                    
-##                      1.58 (1.75)      
+##                      1.69 (2.00)      
 ##  b                                    
-##                      50.5 (29.01)     
+##                      50.50 (29.01)    
 ##  d                                    
-##                      460 (300.01)     
+##                      429.76 (295.97)  
 ##  ifelse(a &gt; 1, 1, 0)                  
-##                      0.56 (0.5)       
-## |=========================================</code></pre>
+##                      0.61 (0.49)      
+## |============================================</code></pre>
 <p>This is just the beginning though. Two powerful things the function can do are shown below:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a &gt;<span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
        <span class="dt">splitby=</span>~<span class="kw">factor</span>(c), 
        <span class="dt">test=</span><span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## 
-## |===============================================================
-##                      control        treatment       P-Value
-##  Observations        50             50                     
-##  a                                                  0.722  
-##                      1.65 (1.76)    1.52 (1.76)            
-##  b                                                  &lt;.001  
-##                      28.5 (22.37)   72.5 (14.58)           
-##  d                                                  0.005  
-##                      542.64 (321.5) 369.67 (248.04)        
-##  ifelse(a &gt; 1, 1, 0)                                0.691  
-##                      0.58 (0.5)     0.54 (0.5)             
-## |===============================================================</code></pre>
+## |================================================================
+##                      control         treatment       P-Value
+##  Observations        50              50                     
+##  a                                                   0.296  
+##                      1.48 (2.07)     1.90 (1.93)            
+##  b                                                   &lt;.001  
+##                      28.50 (22.37)   72.50 (14.58)          
+##  d                                                   0.358  
+##                      402.28 (307.53) 459.79 (283.34)        
+##  ifelse(a &gt; 1, 1, 0)                                 0.84   
+##                      0.60 (0.49)     0.62 (0.49)            
+## |================================================================</code></pre>
 <p>The <code>splitby = ~factor(c)</code> stratifies the means and counts by a factor variable (in this case either control or treatment). When we use this we can also automatically compute tests of significance using <code>test=TRUE</code>.</p>
 <p>Finally, you can polish it quite a bit using a few other options. For example, you can do the following:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a &gt;<span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
@@ -159,19 +161,39 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
        <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),
        <span class="dt">splitby_labels =</span> <span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>, <span class="st">&quot;Treatment&quot;</span>))</code></pre></div>
 <pre><code>## 
-## |========================================================
-##               Control        Treatment       P-Value
-##  Observations 50             50                     
-##  A                                           0.722  
-##               1.65 (1.76)    1.52 (1.76)            
-##  B                                           &lt;.001  
-##               28.5 (22.37)   72.5 (14.58)           
-##  D                                           0.005  
-##               542.64 (321.5) 369.67 (248.04)        
-##  New Var                                     0.691  
-##               0.58 (0.5)     0.54 (0.5)             
-## |========================================================</code></pre>
-<p>This can also be outputted as a latex table:</p>
+## |=========================================================
+##               Control         Treatment       P-Value
+##  Observations 50              50                     
+##  A                                            0.296  
+##               1.48 (2.07)     1.90 (1.93)            
+##  B                                            &lt;.001  
+##               28.50 (22.37)   72.50 (14.58)          
+##  D                                            0.358  
+##               402.28 (307.53) 459.79 (283.34)        
+##  New Var                                      0.84   
+##               0.60 (0.49)     0.62 (0.49)            
+## |=========================================================</code></pre>
+<p>You can also format the numbers (adding a comma for big numbers such as in 20,000 instead of 20000):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a &gt;<span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
+       <span class="dt">splitby=</span>~<span class="kw">factor</span>(c), 
+       <span class="dt">test=</span><span class="ot">TRUE</span>,
+       <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),
+       <span class="dt">splitby_labels =</span> <span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>, <span class="st">&quot;Treatment&quot;</span>),
+       <span class="dt">format_number =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## 
+## |=========================================================
+##               Control         Treatment       P-Value
+##  Observations 50              50                     
+##  A                                            0.296  
+##               1.48 (2.07)     1.90 (1.93)            
+##  B                                            &lt;.001  
+##               28.50 (22.37)   72.50 (14.58)          
+##  D                                            0.358  
+##               402.28 (307.53) 459.79 (283.34)        
+##  New Var                                      0.84   
+##               0.60 (0.49)     0.62 (0.49)            
+## |=========================================================</code></pre>
+<p>This can also be outputted as a latex, markdown, or pandoc table (matching all the output types of <code>knitr::kable</code>). Below shows how to do a latex table:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a &gt;<span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
        <span class="dt">splitby=</span>~<span class="kw">factor</span>(c), 
        <span class="dt">test=</span><span class="ot">TRUE</span>,
@@ -180,9 +202,31 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
        <span class="dt">output_type =</span> <span class="st">&quot;latex&quot;</span>)</code></pre></div>
 
 </div>
+<div id="simple-table-1" class="section level2">
+<h2>Simple Table 1</h2>
+<p>Last item to show you: <code>simple_table1()</code>. This instead of reporting counts and percentages for categorical variables, it reports only percentages. I have more plans for this function but for now, that is the main benefit over <code>table1()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">simple_table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a &gt;<span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
+              <span class="dt">splitby=</span>~<span class="kw">factor</span>(c), 
+              <span class="dt">test=</span><span class="ot">TRUE</span>,
+              <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),
+              <span class="dt">splitby_labels =</span> <span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>, <span class="st">&quot;Treatment&quot;</span>))</code></pre></div>
+<pre><code>## 
+## |=========================================================
+##               Control         Treatment       P-Value
+##  Observations 50              50                     
+##  A                                            0.296  
+##               1.48 (2.07)     1.90 (1.93)            
+##  B                                            &lt;.001  
+##               28.50 (22.37)   72.50 (14.58)          
+##  D                                            0.358  
+##               402.28 (307.53) 459.79 (283.34)        
+##  New Var                                      0.84   
+##               0.60 (0.49)     0.62 (0.49)            
+## |=========================================================</code></pre>
+</div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>Both <code>table1</code> and <code>washer</code> add simplicity to cleaning up and understanding your data. Use these pieces of furniture to make your quantitative life a bit easier.</p>
+<p>The three functions: <code>table1</code>, <code>simple_table1</code> and <code>washer</code> add simplicity to cleaning up and understanding your data. Use these pieces of furniture to make your quantitative life a bit easier.</p>
 </div>
 
 

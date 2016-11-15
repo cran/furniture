@@ -9,7 +9,7 @@ df <- data.frame(a = rnorm(100, 1.5, 2),
                  d = c(sample(1:1000, 90, replace=TRUE), rep(-99, 10)))
 
 ## ----washer--------------------------------------------------------------
-library(dplyr)
+library(tidyverse)
 
 df <- df %>%
   mutate(d = washer(d, -99),  ## changes the placeholder -99 to NA
@@ -39,5 +39,20 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
        splitby_labels = c("Control", "Treatment"),
+       format_number = TRUE)
+
+## ----table1.6------------------------------------------------------------
+table1(df, a, b, d, ifelse(a > 1, 1, 0),
+       splitby=~factor(c), 
+       test=TRUE,
+       var_names = c("A", "B", "D", "New Var"),
+       splitby_labels = c("Control", "Treatment"),
        output_type = "latex")
+
+## ----simple_table1.1-----------------------------------------------------
+simple_table1(df, a, b, d, ifelse(a > 1, 1, 0),
+              splitby=~factor(c), 
+              test=TRUE,
+              var_names = c("A", "B", "D", "New Var"),
+              splitby_labels = c("Control", "Treatment"))
 
