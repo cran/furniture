@@ -3,12 +3,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(furniture)
 
 ## ----data----------------------------------------------------------------
-df <- data.frame(a = rnorm(100, 1.5, 2), 
-                 b = seq(1, 100, 1), 
-                 c = c(rep("control", 40), rep("Other", 7), rep("treatment", 50), rep("None", 3)),
-                 d = c(sample(1:1000, 90, replace=TRUE), rep(-99, 10)))
+df <- data.frame(a = rnorm(1000, 1.5, 2), 
+                 b = seq(1, 1000, 1), 
+                 c = c(rep("control", 400), rep("Other", 70), rep("treatment", 500), rep("None", 30)),
+                 d = c(sample(1:1000, 900, replace=TRUE), rep(-99, 100)))
 
-## ----washer--------------------------------------------------------------
+## ----washer, message=FALSE, warning=FALSE--------------------------------
 library(tidyverse)
 
 df <- df %>%
@@ -31,7 +31,9 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"))
+       splitby_labels = c("Control", "Treatment"),
+       simple = TRUE,
+       condense = TRUE)
 
 ## ----table1.5------------------------------------------------------------
 table1(df, a, b, d, ifelse(a > 1, 1, 0),
@@ -47,12 +49,29 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
        splitby_labels = c("Control", "Treatment"),
+       format_number = TRUE,
+       export = "example_table1")
+
+## ----table1.7------------------------------------------------------------
+table1(df, a, b, d, ifelse(a > 1, 1, 0),
+       splitby=~factor(c), 
+       test=TRUE,
+       var_names = c("A", "B", "D", "New Var"),
+       splitby_labels = c("Control", "Treatment"),
        output_type = "latex")
 
 ## ----simple_table1.1-----------------------------------------------------
-simple_table1(df, a, b, d, ifelse(a > 1, 1, 0),
-              splitby=~factor(c), 
-              test=TRUE,
-              var_names = c("A", "B", "D", "New Var"),
-              splitby_labels = c("Control", "Treatment"))
+table1(df, a, b, d, ifelse(a > 1, 1, 0),
+       splitby=~factor(c), 
+       test=TRUE,
+       var_names = c("A", "B", "D", "New Var"),
+       splitby_labels = c("Control", "Treatment"),
+       simple = TRUE,
+       condense = TRUE)
+
+## ----tableM--------------------------------------------------------------
+tableM(df, a, b, factor(c),
+       missing_var=~d, 
+       test=TRUE,
+       simple = TRUE)
 
