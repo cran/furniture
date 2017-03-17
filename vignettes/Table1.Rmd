@@ -18,7 +18,7 @@ library(furniture)
 This vignette demonstrates the main function of the `furniture` package--`table1`. The main parts of the package are below:
 
 ```{r structure, eval=FALSE}
-table1(.data, ..., splitby, row_wise, test, output_type, format_output, format_number, NAkeep, piping, splitby_labels, var_names, simple, condense)
+table1(.data, ..., splitby, row_wise, test, type, output, format_number, NAkeep, splitby_labels, var_names)
 ```
 
 It contains several useful features for summarizing your data:
@@ -29,7 +29,7 @@ It contains several useful features for summarizing your data:
 4. It can give bivariate test results for the variable with the grouping variable, which provides the correct test type depending on the variable types.
 5. It is flexible as to its output: can be printed in regular console output or it can be printed in latex, markdown, and pandoc (see `knitr::kable`).
 6. Numbers can be formatted nicely.
-7. Table has multiple formatting options to fit various needs using `output_type`, `format_output`, `simple` and `condense`.
+7. Table has multiple formatting options to fit various needs using `output`, `format_output`, `simple` and `condense`.
 8. The table can be exported to a CSV with `export = "file_name"`.
 
 To illustrate, we'll walk through the main arguments with an example on some ficticious data.
@@ -51,7 +51,7 @@ We will use `df` to show these main features of `table1`.
 
 ### The ...
 
-For `table1`, the ellipses (the `...`), are the variables to be summarized that are found in your data. Here, we have a - e in `df`.
+For `table1`, the ellipses (the `...`), are the variables to be summarized that are found in your data. Here, we have `a` through `e` in `df`.
 ```{r simple}
 table1(df, 
        a, b, c, d, e)
@@ -98,23 +98,21 @@ table1(df,
        f, a, b, c,
        splitby = ~d,
        test = TRUE,
-       simple = TRUE,
-       condense = TRUE)
+       type = c("simple", "condensed"))
 ```
 
 
 ## Medians
 
-If the medians and the interquartile range is desired instead of means and SD's, simply use the `medians` argument:
+If the medians and the interquartile range is desired instead of means and SD's, simply use the `second` argument:
 
 ```{r meds}
 table1(df,
        f, a, b, c,
        splitby = ~d,
        test = TRUE,
-       simple = TRUE,
-       condense = TRUE,
-       medians = c("a", "b"))
+       type = c("simple", "condensed"),
+       second = c("a", "b"))
 ```
 
 
@@ -131,7 +129,7 @@ table1(df,
        a, b, c,
        splitby = ~d,
        test = TRUE,
-       output_type = "html")
+       output = "html")
 ```
 
 ### Format Number
@@ -173,9 +171,7 @@ df %>%
   table1(a, b, c,
          splitby = ~d,
          test = TRUE,
-         piping = TRUE,
-         simple = TRUE,
-         condense = TRUE) %>%
+         type = c("simple", "condensed")) %>%
   ggplot(aes(x = b, y = a, group = d)) +
     geom_point(aes(color = d), alpha =.25) +
     geom_smooth(aes(color = d), method = "lm", se=FALSE) +
@@ -184,16 +180,15 @@ df %>%
 ```
 
 
-### Splitby Labels and Var Names
+### Var Names
 
-The `splitby_labels` argument gives you the opportunity to name the levels of the splitby factor and the `var_names` argument lets you rename the variables.
+The `var_names` argument lets you rename the variables.
 
 ```{r}
 table1(df,
        a, b, c,
        splitby = ~d,
        test = TRUE,
-       splitby_labels = c("No", "Yes"),
        var_names = c("A", "B", "C"))
 ```
 
@@ -204,7 +199,6 @@ table1(df,
        factor(ifelse(a > 1, 1, 0)), b, c,
        splitby = ~d,
        test = TRUE,
-       splitby_labels = c("No", "Yes"),
        var_names = c("A", "B", "C"))
 ```
 

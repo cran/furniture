@@ -3,7 +3,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(furniture)
 
 ## ----structure, eval=FALSE-----------------------------------------------
-#  table1(.data, ..., splitby, row_wise, test, output_type, format_output, format_number, NAkeep, piping, splitby_labels, var_names, simple, condense)
+#  table1(.data, ..., splitby, row_wise, test, type, output, format_number, NAkeep, splitby_labels, var_names)
 
 ## ----data----------------------------------------------------------------
 set.seed(84332)
@@ -41,24 +41,22 @@ table1(df,
        f, a, b, c,
        splitby = ~d,
        test = TRUE,
-       simple = TRUE,
-       condense = TRUE)
+       type = c("simple", "condensed"))
 
 ## ----meds----------------------------------------------------------------
 table1(df,
        f, a, b, c,
        splitby = ~d,
        test = TRUE,
-       simple = TRUE,
-       condense = TRUE,
-       medians = c("a", "b"))
+       type = c("simple", "condensed"),
+       second = c("a", "b"))
 
 ## ----html----------------------------------------------------------------
 table1(df,
        a, b, c,
        splitby = ~d,
        test = TRUE,
-       output_type = "html")
+       output = "html")
 
 ## ----formatnumber--------------------------------------------------------
 table1(df,
@@ -83,9 +81,7 @@ df %>%
   table1(a, b, c,
          splitby = ~d,
          test = TRUE,
-         piping = TRUE,
-         simple = TRUE,
-         condense = TRUE) %>%
+         type = c("simple", "condensed")) %>%
   ggplot(aes(x = b, y = a, group = d)) +
     geom_point(aes(color = d), alpha =.25) +
     geom_smooth(aes(color = d), method = "lm", se=FALSE) +
@@ -97,7 +93,6 @@ table1(df,
        a, b, c,
        splitby = ~d,
        test = TRUE,
-       splitby_labels = c("No", "Yes"),
        var_names = c("A", "B", "C"))
 
 ## ---- warning=FALSE, message=FALSE---------------------------------------
@@ -105,7 +100,6 @@ table1(df,
        factor(ifelse(a > 1, 1, 0)), b, c,
        splitby = ~d,
        test = TRUE,
-       splitby_labels = c("No", "Yes"),
        var_names = c("A", "B", "C"))
 
 ## ----dataframe-----------------------------------------------------------

@@ -69,9 +69,7 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
-       simple = TRUE,
-       condense = TRUE)
+       type = c("simple", "condensed"))
 ```
 
 You can also format the numbers (adding a comma for big numbers such as in 20,000 instead of 20000):
@@ -80,17 +78,15 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
        format_number = TRUE)
 ```
 
 The table can be exported directly to a folder in the working directory called "Table1". Using `export`, we provide it with a string that will be the name of the CSV containing the formatted table.
-```{r table1.6}
+```{r table1.6, eval=FALSE}
 table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
        format_number = TRUE,
        export = "example_table1")
 ```
@@ -101,8 +97,7 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
-       output_type = "latex")
+       output = "latex")
 ```
 
 Last item to show you regarding `table1()` is that it can be printed in a simplified and condensed form. This instead of reporting counts and percentages for categorical variables, it reports only percentages and the table has much less white space.
@@ -111,23 +106,12 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
-       simple = TRUE,
-       condense = TRUE)
+       type = c("simple", "condensed"))
 ```
 
-## `tableM`
-
-Final item for this vignette--`tableM`. This function provides the "Table 1" format for a stratifying variable that has missing values.
-```{r tableM}
-tableM(df, a, b, factor(c),
-       missing_var=~d, 
-       test=TRUE,
-       simple = TRUE)
-```
 
 
 ## Conclusion
 
-The three functions: `table1`, `tableM` and `washer` add simplicity to cleaning up and understanding your data. Use these pieces of furniture to make your quantitative life a bit easier.
+The three functions: `table1` and `washer` add simplicity to cleaning up and understanding your data. Use these pieces of furniture to make your quantitative life a bit easier.
 

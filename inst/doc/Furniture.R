@@ -31,47 +31,34 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
-       simple = TRUE,
-       condense = TRUE)
+       type = c("simple", "condensed"))
 
 ## ----table1.5------------------------------------------------------------
 table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
        format_number = TRUE)
 
-## ----table1.6------------------------------------------------------------
-table1(df, a, b, d, ifelse(a > 1, 1, 0),
-       splitby=~factor(c), 
-       test=TRUE,
-       var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
-       format_number = TRUE,
-       export = "example_table1")
+## ----table1.6, eval=FALSE------------------------------------------------
+#  table1(df, a, b, d, ifelse(a > 1, 1, 0),
+#         splitby=~factor(c),
+#         test=TRUE,
+#         var_names = c("A", "B", "D", "New Var"),
+#         format_number = TRUE,
+#         export = "example_table1")
 
 ## ----table1.7------------------------------------------------------------
 table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
-       output_type = "latex")
+       output = "latex")
 
 ## ----simple_table1.1-----------------------------------------------------
 table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
-       splitby_labels = c("Control", "Treatment"),
-       simple = TRUE,
-       condense = TRUE)
-
-## ----tableM--------------------------------------------------------------
-tableM(df, a, b, factor(c),
-       missing_var=~d, 
-       test=TRUE,
-       simple = TRUE)
+       type = c("simple", "condensed"))
 
