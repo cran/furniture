@@ -1,3 +1,12 @@
+# Version 1.5.4
+
+There are three notable changes in this update:
+
+1. Small bug fix when using piping and ask for one of the kable output options. This has now been fixed. Additionally, better error catching and improved function tests.
+2. The `long()` function has been added to the package. It is a wrapper of the `stats::reshape()` function with a direction set to "long", but has added benefits, including a bit clearner syntax, the ability to handle unbalanced data, and works well with the tidyverse.
+3. The `wide()` function has been added as well. It, like `long()`, is a wrapper of `reshape()` but with a set direction of "wide" and has added benefits as well.
+
+
 # Version 1.5.0
 
 `table1()` now has the ability to apply any function to numeric variables that the user supplies (all functions that work with `tapply()` should work with `table1()`. Other than that, the changes are mainly internal changes in `table1()` that have bearing on a few arguments.

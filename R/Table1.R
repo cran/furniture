@@ -10,7 +10,7 @@
 #' @param splitby the categorical variable to stratify by in formula form (e.g., \code{splitby = ~gender}) or quoted (e.g., \code{splitby = "gender"}); not too surprisingly, it requires that the number of levels be > 0
 #' @param FUN the function to be applied to summarize the numeric data; default is to report the means and standard deviations
 #' @param FUN2 a secondary function to be applied to summarize the numeric data; default is to report the medians and 25\% and 75\% quartiles
-#' @param second a vector or list of continuous variables for which the \code{FUN2} should be applied
+#' @param second a vector or list of quoted continuous variables for which the \code{FUN2} should be applied
 #' @param row_wise how to calculate percentages for factor variables when \code{splitby != NULL}: if \code{FALSE} calculates percentages by variable within groups; if \code{TRUE} calculates percentages across groups for one level of the factor variable.
 #' @param test logical; if set to \code{TRUE} then the appropriate bivariate tests of significance are performed if splitby has more than 1 level
 #' @param type what is displayed in the table; a string or a vector of strings. Two main sections can be inputted: 1. if test = TRUE, can write "pvalues", "full", or "stars" and 2. can state "simple" and/or "condense". These are discussed in more depth in the details section below.
@@ -18,7 +18,7 @@
 #' @param rounding_perc the number of digits after the decimal for percentages; default is 1
 #' @param var_names custom variable names to be printed in the table
 #' @param format_number default in FALSE; if TRUE, then the numbers are formatted with commas (e.g., 20,000 instead of 20000)
-#' @param NAkeep when sset to \code{TRUE} it also shows how many missing values are in the data for each categorical variable being summarized
+#' @param NAkeep when set to \code{TRUE} it also shows how many missing values are in the data for each categorical variable being summarized
 #' @param booktabs when \code{output != "text"}; option is passed to \code{knitr::kable}
 #' @param caption when \code{output != "text"}; option is passed to \code{knitr::kable}
 #' @param align when \code{output != "text"}; option is passed to \code{knitr::kable}
@@ -265,19 +265,23 @@ table1 = function(.data,
   ## Output from kable
   } else if (output %in% c("latex", "markdown", "html", "pandoc", "rst")){
     if (piping){
-      knitr::kable(final, format=output,
+      kab = knitr::kable(final, format=output,
                    booktabs = booktabs,
                    caption = caption,
                    align = align,
                    row.names = FALSE)
+      print(kab)
       invisible(.data)
     } else {
-      knitr::kable(final, format=output,
+      kab = knitr::kable(final, format=output,
                    booktabs = booktabs,
                    caption = caption,
                    align = align,
                    row.names = FALSE)
+      return(kab)
     }
+  } else {
+    stop(paste("Output of type", output, "not recognized"))
   }
 }
 
@@ -342,7 +346,7 @@ print.table1 <- function(x, ...){
 #' 
 #' @param ... the variables
 #' @param d_ the data.frame
-#' @param .cl the original functon call
+#' @param .cl the original function call
 #' 
 #' @return A data.frame
 #'
@@ -607,15 +611,15 @@ table1_format_condense = function(d, tab, tab2, tests, test, NAkeep, rounding_pe
     if (is.factor(d[,j])){
       if (length(levels(d[,j])) == 2){
         if (!grepl("text", output)){
-          tabX = data.frame(paste0(names(d)[j], ": ", names(table(d[,j])[2])))
+          tabX = data.frame(paste0(names(d)[j], ": ", names(table(d[,j], useNA=NAkeep)[2])))
         } else {
-          tabX = data.frame(paste0(names(d)[j], ": ", names(table(d[,j])[2])))
+          tabX = data.frame(paste0(names(d)[j], ": ", names(table(d[,j], useNA=NAkeep)[2])))
         }
       } else if (length(levels(d[,j])) > 2){
         if (!grepl("text", output)){
-          tabX = data.frame(paste("--  ", names(table(d[,j]))))
+          tabX = data.frame(paste("--  ", names(table(d[,j], useNA=NAkeep))))
         } else {
-          tabX = data.frame(paste("  ", names(table(d[,j]))))
+          tabX = data.frame(paste("  ", names(table(d[,j], useNA=NAkeep))))
         }
       }
     } else if (is.numeric(d[,j])){

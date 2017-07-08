@@ -93,6 +93,20 @@ test_that("table1 produces table1", {
   expect_s3_class(table1(df, c(1:3), splitby=~b, 
                          test=TRUE, 
                          output = "text2"), "table1")
+  expect_s3_class(df %>% table1(c(1:3), splitby=~b, 
+                         row_wise = TRUE,
+                         test=TRUE, 
+                         output = "text2"), "data.frame")
+  expect_s3_class(df %>% table1(c(1:3), splitby=~b, 
+                         test=TRUE, 
+                         output = "text2"), "data.frame")
+  expect_s3_class(df %>% table1(c(1:3), splitby=~b, 
+                         row_wise = TRUE,
+                         test=TRUE, 
+                         output = "latex"), "data.frame")
+  expect_s3_class(table1(df, c(1:3), splitby=~b, 
+                         test=TRUE, 
+                         output = "html"), "knitr_kable")
   ## Simple Format
   expect_s3_class(table1(df, c(1:3), splitby=~b, 
                          test=TRUE, 
@@ -119,4 +133,5 @@ test_that("table1 produces table1", {
                          export = "test_tab",
                          second = c("a", "c")), "table1")
 })
+
 
