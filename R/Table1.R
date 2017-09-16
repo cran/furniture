@@ -16,8 +16,8 @@
 #' @param type what is displayed in the table; a string or a vector of strings. Two main sections can be inputted: 1. if test = TRUE, can write "pvalues", "full", or "stars" and 2. can state "simple" and/or "condense". These are discussed in more depth in the details section below.
 #' @param output how the table is output; can be "text" or "text2" for regular console output or any of \code{kable()}'s options from \code{knitr} (e.g., "latex", "markdown", "pandoc").
 #' @param rounding_perc the number of digits after the decimal for percentages; default is 1
-#' @param var_names custom variable names to be printed in the table
-#' @param format_number default in FALSE; if TRUE, then the numbers are formatted with commas (e.g., 20,000 instead of 20000)
+#' @param var_names custom variable names to be printed in the table (deprecated). Variable names can be applied directly in the list of variables.
+#' @param format_number default is FALSE; if TRUE, then the numbers are formatted with commas (e.g., 20,000 instead of 20000)
 #' @param NAkeep when set to \code{TRUE} it also shows how many missing values are in the data for each categorical variable being summarized
 #' @param booktabs when \code{output != "text"}; option is passed to \code{knitr::kable}
 #' @param caption when \code{output != "text"}; option is passed to \code{knitr::kable}
@@ -57,8 +57,9 @@
 #'          splitby = ~a) %>%
 #'   summarise(count = n())
 #' 
-#' ## Adjust variables within function
-#' table1(df, ifelse(x > 0, 1, 0), z,
+#' ## Adjust variables within function and assign name
+#' table1(df, 
+#'        x2 = ifelse(x > 0, 1, 0), z,
 #'        var_names = c("X2", "Z"))
 #'          
 #'
@@ -153,10 +154,10 @@ table1 = function(.data,
   ## Variable Selecting ##
   ########################
   ## All Variables or Selected Variables using table1_()
-  data = table1_(..., d_=.data, .cl=.call)
-  d = as.data.frame(data)
+  d = selecting(d_=.data, ...)
   ### Naming of variables
   if (!is.null(var_names)){
+    warning("var_names is deprecated. You can now assign names directly:\ne.g. var1 = var1name, var2 = var2name, ...")
     stopifnot(length(var_names)==length(names(d)))
     names(d) = var_names
   }
@@ -340,49 +341,50 @@ print.table1 <- function(x, ...){
   cat("|\n")
 }
 
-#' Internal Table 1 Function
+#' Selecting Function
 #' 
-#' For internal use in table1() to extract the right data.
+#' For internal use in \code{table1()} and \code{tableC()} to extract the right data. 
+#' Can also be used much like \code{dplyr::select()}, although I'd recommend
+#' one to use \code{dplyr::select()} in general.
 #' 
-#' @param ... the variables
 #' @param d_ the data.frame
-#' @param .cl the original function call
+#' @param ... the variables
 #' 
-#' @return A data.frame
+#' @return The data.frame with the selected variables
 #'
 #' @export
 #' @import stats
-table1_ <- function(..., d_, .cl=NULL){
-  df1 = NULL
-  vars = eval(substitute(alist(...)))
+selecting <- function(d_, ...) {
+  listed <- eval(substitute(alist(...)))
   
-  if (length(vars) == 0){
-    df2 <- d_
-  } else if (length(vars) == 1){
-    if(grepl("^c\\(.*\\)$", vars)){
-      ## Index
-      df2   <- d_[, eval(vars[[1]])]
+  ## Return all variables
+  if (length(listed) == 0)
+    return(d_)
+  ## If input are indices
+  if (length(listed) == 1 & any(grepl("^c\\(.*\\)$", listed)))
+    return(d_[, eval(listed[[1]])])
+  
+  ## Data Frame
+  df <- lapply(seq_along(listed), 
+               function(i) eval(listed[[i]], d_))
+  
+  ## Variable Names
+  names1 <- names(listed)
+  to_name <- function(i) {
+    if (is.null(names1)) {
+      deparse(listed[[i]])
     } else {
-      df1 <- eval(vars[[1]], d_)
-      df2 <- as.data.frame(df1)
-      names(df2) <- paste(vars)
+      if (names1[[i]] == "") {
+        deparse(listed[[i]])
+      } else {
+        names1[[i]]
+      }
     }
-  } else {
-    ## Var Names
-    for (i in seq_along(vars)){
-      df1[[i]] <- eval(vars[[i]], d_)
-    }
-    df2 <- as.data.frame(df1)
-    names(df2) <- paste(vars)
   }
+  names(df) <- lapply(seq_along(listed), to_name)
   
-  ## Error catching 
-  if (dim(d_)[1] != length(df2[[1]])){
-    stop("There is a problem with the variable names supplied.",
-         call.=FALSE)
-  }
-  
-  return(df2)
+  ## Returned data frame with original row names
+  data.frame(df, row.names = row.names(d_))
 }
 
 #' Internal Table 1 Summarizing Function

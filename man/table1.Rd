@@ -33,9 +33,9 @@ table1(.data, ..., splitby = NULL, FUN = NULL, FUN2 = NULL,
 
 \item{rounding_perc}{the number of digits after the decimal for percentages; default is 1}
 
-\item{var_names}{custom variable names to be printed in the table}
+\item{var_names}{custom variable names to be printed in the table (deprecated). Variable names can be applied directly in the list of variables.}
 
-\item{format_number}{default in FALSE; if TRUE, then the numbers are formatted with commas (e.g., 20,000 instead of 20000)}
+\item{format_number}{default is FALSE; if TRUE, then the numbers are formatted with commas (e.g., 20,000 instead of 20000)}
 
 \item{NAkeep}{when set to \code{TRUE} it also shows how many missing values are in the data for each categorical variable being summarized}
 
@@ -88,8 +88,9 @@ df \%>\%
          splitby = ~a) \%>\%
   summarise(count = n())
 
-## Adjust variables within function
-table1(df, ifelse(x > 0, 1, 0), z,
+## Adjust variables within function and assign name
+table1(df, 
+       x2 = ifelse(x > 0, 1, 0), z,
        var_names = c("X2", "Z"))
          
 

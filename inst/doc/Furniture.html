@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2017-07-07" />
+<meta name="date" content="2017-09-16" />
 
 <title>Furniture</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Furniture</h1>
-<h4 class="date"><em>2017-07-07</em></h4>
+<h4 class="date"><em>2017-09-16</em></h4>
 
 
 
@@ -103,14 +103,14 @@ df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
 ##               Mean/Count (SD/%)
 ##  Observations 1000             
 ##  a                             
-##               1.6 (2.0)        
+##               1.4 (2.0)        
 ##  b                             
 ##               500.5 (288.8)    
-##  factor(c)                     
+##  factor.c.                     
 ##     control   500 (50%)        
 ##     treatment 500 (50%)        
 ##  d                             
-##               488.3 (286.8)    
+##               496.1 (294.2)    
 ## |==============================|</code></pre>
 <p>The variables must be numeric or factor. Since we use a special type of evaluation (i.e. Non-Standard Evaluation) we can change the variables in the function (e.g., <code>factor(c)</code>). This can be extended to making a whole new variable in the function as well.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</code></pre></div>
@@ -119,12 +119,12 @@ df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
 ##                      Mean/Count (SD/%)
 ##  Observations        1000             
 ##  a                                    
-##                      1.6 (2.0)        
+##                      1.4 (2.0)        
 ##  b                                    
 ##                      500.5 (288.8)    
 ##  d                                    
-##                      488.3 (286.8)    
-##  ifelse(a &gt; 1, 1, 0)                  
+##                      496.1 (294.2)    
+##  ifelse.a...1..1..0.                  
 ##                      0.6 (0.5)        
 ## |=====================================|</code></pre>
 <p>This is just the beginning though. Two powerful things the function can do are shown below:</p>
@@ -136,13 +136,13 @@ df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
 ##                                  factor(c) 
 ##                      control       treatment     P-Value
 ##  Observations        500           500                  
-##  a                                               0.175  
-##                      1.5 (2.0)     1.7 (1.9)            
+##  a                                               0.718  
+##                      1.5 (2.0)     1.4 (2.0)            
 ##  b                                               &lt;.001  
 ##                      280.5 (221.7) 720.5 (144.5)        
-##  d                                               0.384  
-##                      496.2 (286.9) 479.5 (286.7)        
-##  ifelse(a &gt; 1, 1, 0)                             0.513  
+##  d                                               0.496  
+##                      489.7 (289.1) 503.1 (299.7)        
+##  ifelse.a...1..1..0.                             0.748  
 ##                      0.6 (0.5)     0.6 (0.5)            
 ## |=======================================================|</code></pre>
 <p>The <code>splitby = ~factor(c)</code> stratifies the means and counts by a factor variable (in this case either control or treatment). When we use this we can also automatically compute tests of significance using <code>test=TRUE</code>.</p>
@@ -152,15 +152,17 @@ df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
        <span class="dt">test=</span><span class="ot">TRUE</span>,
        <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),
        <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</code></pre></div>
+<pre><code>## Warning in table1(df, a, b, d, ifelse(a &gt; 1, 1, 0), splitby = ~factor(c), : var_names is deprecated. You can now assign names directly:
+## e.g. var1 = var1name, var2 = var2name, ...</code></pre>
 <pre><code>## 
 ## |================================================|
 ##                           factor(c) 
 ##               control       treatment     P-Value
 ##  Observations 500           500                  
-##  A            1.5 (2.0)     1.7 (1.9)     0.175  
+##  A            1.5 (2.0)     1.4 (2.0)     0.718  
 ##  B            280.5 (221.7) 720.5 (144.5) &lt;.001  
-##  D            496.2 (286.9) 479.5 (286.7) 0.384  
-##  New Var      0.6 (0.5)     0.6 (0.5)     0.513  
+##  D            489.7 (289.1) 503.1 (299.7) 0.496  
+##  New Var      0.6 (0.5)     0.6 (0.5)     0.748  
 ## |================================================|</code></pre>
 <p>You can also format the numbers (adding a comma for big numbers such as in 20,000 instead of 20000):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
@@ -168,18 +170,20 @@ df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
        <span class="dt">test=</span><span class="ot">TRUE</span>,
        <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),
        <span class="dt">format_number =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Warning in table1(df, a, b, d, ifelse(a &gt; 1, 1, 0), splitby = ~factor(c), : var_names is deprecated. You can now assign names directly:
+## e.g. var1 = var1name, var2 = var2name, ...</code></pre>
 <pre><code>## 
 ## |================================================|
 ##                           factor(c) 
 ##               control       treatment     P-Value
 ##  Observations 500           500                  
-##  A                                        0.175  
-##               1.5 (2.0)     1.7 (1.9)            
+##  A                                        0.718  
+##               1.5 (2.0)     1.4 (2.0)            
 ##  B                                        &lt;.001  
 ##               280.5 (221.7) 720.5 (144.5)        
-##  D                                        0.384  
-##               496.2 (286.9) 479.5 (286.7)        
-##  New Var                                  0.513  
+##  D                                        0.496  
+##               489.7 (289.1) 503.1 (299.7)        
+##  New Var                                  0.748  
 ##               0.6 (0.5)     0.6 (0.5)            
 ## |================================================|</code></pre>
 <p>The table can be exported directly to a folder in the working directory called “Table1”. Using <code>export</code>, we provide it with a string that will be the name of the CSV containing the formatted table.</p>
@@ -195,6 +199,8 @@ df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
        <span class="dt">test=</span><span class="ot">TRUE</span>,
        <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),
        <span class="dt">output =</span> <span class="st">&quot;latex&quot;</span>)</code></pre></div>
+<pre><code>## Warning in table1(df, a, b, d, ifelse(a &gt; 1, 1, 0), splitby = ~factor(c), : var_names is deprecated. You can now assign names directly:
+## e.g. var1 = var1name, var2 = var2name, ...</code></pre>
 
 <p>Last item to show you regarding <code>table1()</code> is that it can be printed in a simplified and condensed form. This instead of reporting counts and percentages for categorical variables, it reports only percentages and the table has much less white space.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),
@@ -202,15 +208,17 @@ df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span>
        <span class="dt">test=</span><span class="ot">TRUE</span>,
        <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),
        <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</code></pre></div>
+<pre><code>## Warning in table1(df, a, b, d, ifelse(a &gt; 1, 1, 0), splitby = ~factor(c), : var_names is deprecated. You can now assign names directly:
+## e.g. var1 = var1name, var2 = var2name, ...</code></pre>
 <pre><code>## 
 ## |================================================|
 ##                           factor(c) 
 ##               control       treatment     P-Value
 ##  Observations 500           500                  
-##  A            1.5 (2.0)     1.7 (1.9)     0.175  
+##  A            1.5 (2.0)     1.4 (2.0)     0.718  
 ##  B            280.5 (221.7) 720.5 (144.5) &lt;.001  
-##  D            496.2 (286.9) 479.5 (286.7) 0.384  
-##  New Var      0.6 (0.5)     0.6 (0.5)     0.513  
+##  D            489.7 (289.1) 503.1 (299.7) 0.496  
+##  New Var      0.6 (0.5)     0.6 (0.5)     0.748  
 ## |================================================|</code></pre>
 </div>
 <div id="conclusion" class="section level2">
