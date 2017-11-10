@@ -1,13 +1,15 @@
 Package: furniture
 Type: Package
 Title: Furniture for Quantitative Scientists
-Version: 1.6.0
-Date: 2017-09-16
-Authors@R: c(person("Tyson", "Barrett",  role=c("aut","cre"), email = "t.barrett@aggiemail.usu.edu"),
- 	         person("Emily", "Brignone", role="aut"))
-Author: Tyson Barrett [aut, cre],
-    Emily Brignone [aut]
-Maintainer: Tyson Barrett <t.barrett@aggiemail.usu.edu>
+Version: 1.7.2
+Date: 2017-10-16
+Authors@R: c(person("Tyson S.", "Barrett",  
+                    role=c("aut","cre"), 
+                    email = "t.barrett@aggiemail.usu.edu", 
+                    comment = c(ORCID = "0000-0002-2137-1391")),
+ 	         person("Emily", "Brignone", role="aut"),
+ 	         person("Daniel J.", "Laxman", role="aut"))
+Maintainer: Tyson S. Barrett <t.barrett@aggiemail.usu.edu>
 Description: Contains three main functions (i.e., three pieces of furniture):
     table1() which produces a well-formatted table of descriptives common as Table 1
     in research articles, tableC() which produces a well-formatted table of correlations,
@@ -24,6 +26,9 @@ Encoding: UTF-8
 License: GPL-2
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-09-16 17:07:34 UTC; tysonbarrett
+Packaged: 2017-11-10 08:35:00 UTC; tysonbarrett
+Author: Tyson S. Barrett [aut, cre] (0000-0002-2137-1391),
+  Emily Brignone [aut],
+  Daniel J. Laxman [aut]
 Repository: CRAN
-Date/Publication: 2017-09-16 18:57:49 UTC
+Date/Publication: 2017-11-10 11:40:53 UTC

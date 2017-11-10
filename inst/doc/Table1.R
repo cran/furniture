@@ -3,7 +3,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(furniture)
 
 ## ----structure, eval=FALSE-----------------------------------------------
-#  table1(.data, ..., splitby, row_wise, test, type, output, format_number, NAkeep, splitby_labels, var_names)
+#  table1(.data, ..., splitby, row_wise, test, type, output, format_number, na.rm)
 
 ## ----data----------------------------------------------------------------
 set.seed(84332)
@@ -70,16 +70,15 @@ table1(df,
        a, b, c,
        splitby = ~d,
        test = TRUE,
-       NAkeep = TRUE)
+       na.rm = FALSE)
 
-## ----tidyverse, fig.width=5----------------------------------------------
+## ----tidyverse, fig.width=5, message=FALSE, warning=FALSE----------------
 library(tidyverse)
 
 df %>%
   filter(f == 1) %>%
-  na.omit %>%
+  group_by(d) %>%
   table1(a, b, c,
-         splitby = ~d,
          test = TRUE,
          type = c("simple", "condensed")) %>%
   ggplot(aes(x = b, y = a, group = d)) +
@@ -90,17 +89,22 @@ df %>%
 
 ## ------------------------------------------------------------------------
 table1(df,
-       a, b, c,
+       "Avar" = a, "Bvar" = b, "Cvar" = c,
        splitby = ~d,
-       test = TRUE,
-       var_names = c("A", "B", "C"))
+       test = TRUE)
+
+## ---- warning=FALSE, message=FALSE---------------------------------------
+table1(df,
+       "A" = factor(ifelse(a > 1, 1, 0)), b, c,
+       splitby = ~d,
+       test = TRUE)
 
 ## ---- warning=FALSE, message=FALSE---------------------------------------
 table1(df,
        factor(ifelse(a > 1, 1, 0)), b, c,
        splitby = ~d,
        test = TRUE,
-       var_names = c("A", "B", "C"))
+       var_names = c("A New Variable", "B Variable", "C Variable"))
 
 ## ----dataframe-----------------------------------------------------------
 tab1 = table1(df,

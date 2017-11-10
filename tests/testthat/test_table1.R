@@ -62,29 +62,29 @@ test_that("table1 produces table1", {
   expect_s3_class(table1(df, z, x, y, splitby=~a, 
                          test=TRUE, 
                          splitby_labels = c("male", "female")), "table1")
-  ## NAkeep
+  ## na.rm
   expect_s3_class(table1(df, z, x, y, splitby=~a, 
                          test=TRUE, 
-                         NAkeep = TRUE), "table1")
+                         na.rm = FALSE), "table1")
   ## Format number
   expect_s3_class(table1(df, z, x, y, splitby=~a, 
                          test=TRUE, format_number = TRUE), "table1")
   ## Taking a character var as the splitby
   expect_s3_class(table1(df, z, x, y, splitby=~as.character(a), 
-                         test=TRUE), "table1")
+                         test=FALSE), "table1")
   ## Index
   expect_s3_class(table1(df, c(1:3), splitby=~a, 
                          test=TRUE, 
-                         NAkeep = TRUE), "table1")
+                         na.rm = FALSE), "table1")
   ## Four Level Splitby
   expect_s3_class(table1(df, c(1:3), splitby=~b, 
                          test=TRUE, 
-                         NAkeep = TRUE), "table1")
+                         na.rm = FALSE), "table1")
   ## Row Wise
   expect_s3_class(table1(df, c(1:3), splitby=~b, 
                           row_wise = TRUE,
                           test=TRUE, 
-                          NAkeep = TRUE), "table1")
+                          na.rm = FALSE), "table1")
   ## Text2 output
   expect_s3_class(table1(df, c(1:3), splitby=~b, 
                          row_wise = TRUE,
@@ -132,6 +132,18 @@ test_that("table1 produces table1", {
                          output = "text2",
                          export = "test_tab",
                          second = c("a", "c")), "table1")
+  ## latex2 output
+  expect_is(table1(df, splitby=~b, 
+                         test=FALSE, 
+                         output = "latex2"), "NULL")
+  expect_is(table1(df, splitby=~b, 
+                       test=TRUE, 
+                       output = "latex2"), "NULL")
+  ## header_labels
+  expect_s3_class(table1(df, splitby=~b, 
+                         test=FALSE, 
+                         output = "text2",
+                         header_labels = c(" ", "P-Val"),
+                         second = c("a", "c")), "table1")
 })
-
 

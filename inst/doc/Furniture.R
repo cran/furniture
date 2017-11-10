@@ -26,11 +26,25 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE)
 
+## ----table1.3.2, message=FALSE, warning=FALSE----------------------------
+library(tidyverse)
+
+df %>%
+  group_by(c) %>%
+  table1(a, b, d, ifelse(a > 1, 1, 0), 
+       test=TRUE)
+
 ## ----table1.4------------------------------------------------------------
 table1(df, a, b, d, ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
        var_names = c("A", "B", "D", "New Var"),
+       type = c("simple", "condensed"))
+
+## ----table1.4.2----------------------------------------------------------
+table1(df, A = a, B = b, D = d, A2 = ifelse(a > 1, 1, 0),
+       splitby=~factor(c), 
+       test=TRUE,
        type = c("simple", "condensed"))
 
 ## ----table1.5------------------------------------------------------------
@@ -49,16 +63,40 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
 #         export = "example_table1")
 
 ## ----table1.7------------------------------------------------------------
-table1(df, a, b, d, ifelse(a > 1, 1, 0),
+table1(df, a, b, d, "new var" = ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
-       var_names = c("A", "B", "D", "New Var"),
-       output = "latex")
+       output = "latex2")
 
 ## ----simple_table1.1-----------------------------------------------------
-table1(df, a, b, d, ifelse(a > 1, 1, 0),
+table1(df, a, b, d, "new var" = ifelse(a > 1, 1, 0),
        splitby=~factor(c), 
        test=TRUE,
-       var_names = c("A", "B", "D", "New Var"),
        type = c("simple", "condensed"))
+
+## ----tableC.1------------------------------------------------------------
+tableC(df, 
+       a, b, d,
+       na.rm = TRUE)
+
+## ----tableC.2------------------------------------------------------------
+tableC(df, 
+       "A" = a, "B" = b, "D" = d,
+       na.rm = TRUE,
+       output = "html")
+
+## ----tableF.1------------------------------------------------------------
+tableF(df, a)
+
+## ----tableF.2------------------------------------------------------------
+tableF(df, d, splitby = c)
+
+## ----tableF.3------------------------------------------------------------
+df %>%
+  group_by(c) %>%
+  tableF(d)
+
+## ----tableX.1------------------------------------------------------------
+df %>%
+  tableX(c, ifelse(d > 500, 1, 0))
 

@@ -5,17 +5,18 @@
 \title{Table 1 for Simple and Stratified Descriptive Statistics}
 \usage{
 table1(.data, ..., splitby = NULL, FUN = NULL, FUN2 = NULL,
-  second = NULL, row_wise = FALSE, test = FALSE, type = "pvalues",
-  output = "text", rounding_perc = 1, var_names = NULL,
-  format_number = FALSE, NAkeep = FALSE, booktabs = TRUE,
-  caption = NULL, align = NULL, export = NULL)
+  second = NULL, row_wise = FALSE, test = FALSE, header_labels = NULL,
+  type = "pvalues", output = "text", rounding_perc = 1, digits = 1,
+  var_names = NULL, format_number = FALSE, NAkeep = NULL, na.rm = TRUE,
+  booktabs = TRUE, caption = NULL, align = NULL, float = "ht",
+  export = NULL)
 }
 \arguments{
 \item{.data}{the data.frame that is to be summarized}
 
 \item{...}{variables in the data set that are to be summarized; unquoted names separated by commas (e.g. age, gender, race) or indices. If indices, it needs to be a single vector (e.g. c(1:5, 8, 9:20) instead of 1:5, 8, 9:20). As it is currently, it CANNOT handle both indices and unquoted names simultaneously.}
 
-\item{splitby}{the categorical variable to stratify by in formula form (e.g., \code{splitby = ~gender}) or quoted (e.g., \code{splitby = "gender"}); not too surprisingly, it requires that the number of levels be > 0}
+\item{splitby}{the categorical variable to stratify (in formula form  \code{splitby = ~gender}), quoted \code{splitby = "gender"}, or bare \code{splitby = gender}); instead, \code{dplyr::group_by(...)} can be used}
 
 \item{FUN}{the function to be applied to summarize the numeric data; default is to report the means and standard deviations}
 
@@ -27,23 +28,31 @@ table1(.data, ..., splitby = NULL, FUN = NULL, FUN2 = NULL,
 
 \item{test}{logical; if set to \code{TRUE} then the appropriate bivariate tests of significance are performed if splitby has more than 1 level}
 
+\item{header_labels}{a character vector that renames the header labels (e.g., the blank above the variables, the p-value label, and test value label).}
+
 \item{type}{what is displayed in the table; a string or a vector of strings. Two main sections can be inputted: 1. if test = TRUE, can write "pvalues", "full", or "stars" and 2. can state "simple" and/or "condense". These are discussed in more depth in the details section below.}
 
-\item{output}{how the table is output; can be "text" or "text2" for regular console output or any of \code{kable()}'s options from \code{knitr} (e.g., "latex", "markdown", "pandoc").}
+\item{output}{how the table is output; can be "text" or "text2" for regular console output or any of \code{kable()}'s options from \code{knitr} (e.g., "latex", "markdown", "pandoc"). A new option, \code{'latex2'}, although more limited, allows the variable name to show and has an overall better appearance.}
 
 \item{rounding_perc}{the number of digits after the decimal for percentages; default is 1}
+
+\item{digits}{the number of significant digits for the numerical variables (if using default functions); default is 1.}
 
 \item{var_names}{custom variable names to be printed in the table (deprecated). Variable names can be applied directly in the list of variables.}
 
 \item{format_number}{default is FALSE; if TRUE, then the numbers are formatted with commas (e.g., 20,000 instead of 20000)}
 
-\item{NAkeep}{when set to \code{TRUE} it also shows how many missing values are in the data for each categorical variable being summarized}
+\item{NAkeep}{when set to \code{TRUE} it also shows how many missing values are in the data for each categorical variable being summarized (deprecated; use \code{na.rm})}
+
+\item{na.rm}{when set to \code{FALSE} it also shows how many missing values are in the data for each categorical variable being summarized}
 
 \item{booktabs}{when \code{output != "text"}; option is passed to \code{knitr::kable}}
 
 \item{caption}{when \code{output != "text"}; option is passed to \code{knitr::kable}}
 
 \item{align}{when \code{output != "text"}; option is passed to \code{knitr::kable}}
+
+\item{float}{the float applied to the table in Latex when output is \code{latex2}}
 
 \item{export}{character; when given, it exports the table to a CSV file to folder named "table1" in the working directory with the name of the given string (e.g., "myfile" will save to "myfile.csv")}
 }
@@ -76,22 +85,26 @@ df <- data.frame(x, y, z, a)
 table1(df, x, y, z, a)
 
 ## Stratified
-## both below are the same
+## all three below are the same
 table1(df, x, y, z,
        splitby = ~ a)
 table1(df, x, y, z,
        splitby = "a")
+table1(df, x, y, z,
+       splitby = a)
 
 ## With Piping
 df \%>\%
   table1(x, y, z, 
          splitby = ~a) \%>\%
   summarise(count = n())
+df \%>\%
+  group_by(a) \%>\%
+  table1(x, y, z)
 
 ## Adjust variables within function and assign name
 table1(df, 
-       x2 = ifelse(x > 0, 1, 0), z,
-       var_names = c("X2", "Z"))
+       x2 = ifelse(x > 0, 1, 0), z = z)
          
 
 }

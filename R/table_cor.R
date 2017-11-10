@@ -7,10 +7,11 @@
 #' @param cor_type the correlation type; default is "pearson", other option is "spearman"
 #' @param na.rm logical (default is \code{FALSE}); if set to \code{TRUE}, the correlations use the "complete.obs" methods option from \code{stats::cor()}
 #' @param rounding the value passed to \code{round} for the output of both the correlation and p-value; default is 3
-#' @param output how the table is output; can be "text" for regular console output or any of \code{kable()}'s options from \code{knitr} (e.g., "latex", "markdown", "pandoc").
+#' @param output how the table is output; can be "text" for regular console output, "latex2" for specialized latex output, or any of \code{kable()}'s options from \code{knitr} (e.g., "latex", "markdown", "pandoc").
 #' @param booktabs when \code{output != "text"}; option is passed to \code{knitr::kable}
 #' @param caption when \code{output != "text"}; option is passed to \code{knitr::kable}
 #' @param align when \code{output != "text"}; option is passed to \code{knitr::kable}
+#' @param float when \code{output == "latex2"} it controls the floating parameter (h, t, b, H)
 #'
 #' @seealso stats::cor
 #' 
@@ -26,7 +27,8 @@ tableC = function(.data,
                   output = "text",
                   booktabs = TRUE, 
                   caption = NULL, 
-                  align = NULL){
+                  align = NULL,
+                  float = "htb"){
   
   ## Preprocessing ##
   .call = match.call()
@@ -61,7 +63,12 @@ tableC = function(.data,
   cors = as.data.frame(cors)
   pvalues = as.data.frame(pvalues)
   dims = dim(cors)
-  row.names(cors) = paste0("[", 1:dims[1], "]", row.names(cors))
+  if (output == "latex2"){
+    row.names(cors) = paste0("{[", 1:dims[1], "]}", row.names(cors))
+  } else {
+    row.names(cors) = paste0("[", 1:dims[1], "]", row.names(cors))
+  }
+  
   names(cors) = paste0("[", 1:dims[1], "]")
   
   ## Combine
@@ -86,16 +93,26 @@ tableC = function(.data,
   message("N = ", n, "\n",
           "Note: ", cor_type, " correlation (p-value).")
   if (output != "text"){
-    kab = knitr::kable(final, format=output,
-                       booktabs = booktabs,
-                       caption = caption,
-                       align = align,
-                       row.names = FALSE)
-    return(kab)
+    if (output == "latex2"){
+      if (is.null(align)){
+        l1 = dim(final)[2]
+        align = c("l", rep("c", (l1-1)))
+      }
+      tab = to_latex(final, caption, align, len = dim(final)[2] - 1, splitby = NA, float, cor_type)
+      invisible(tab)
+    } else {
+      kab = knitr::kable(final, format=output,
+                         booktabs = booktabs,
+                         caption = caption,
+                         align = align,
+                         row.names = FALSE)
+      return(kab)
+    }
   } else {
-    final = list("Table1" = final,
-                 "NULL" = NULL)
+    final = list("Table1" = final)
     class(final) = c("table1", "list")
+    attr(final, "splitby") = NULL
+    attr(final, "output") = NULL
     return(final)
   }
 }
