@@ -98,8 +98,8 @@ tableC = function(.data,
         l1 = dim(final)[2]
         align = c("l", rep("c", (l1-1)))
       }
-      tab = to_latex(final, caption, align, len = dim(final)[2] - 1, splitby = NA, float, cor_type)
-      invisible(tab)
+      tab = to_latex(final, caption, align, len = dim(final)[2] - 1, splitby = NA, float, booktabs, cor_type)
+      return(tab)
     } else {
       kab = knitr::kable(final, format=output,
                          booktabs = booktabs,
