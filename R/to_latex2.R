@@ -9,13 +9,14 @@
 #' @param splitby the name of the grouping factor
 #' @param float argument for latex formatting
 #' @param cor_type optional argument regarding the correlation type (for tableC)
-#' @param booktabs add booktabs to latex table?
+#' @param booktabs add booktabs to latex table
+#' @param label latex label option
 #' 
 #' @export
 #' @import utils
 #' 
 
-to_latex = function(tab, caption, align, len, splitby, float, booktabs, cor_type=NULL){
+to_latex = function(tab, caption, align, len, splitby, float, booktabs, label, cor_type=NULL){
   if (is.null(cor_type) & is.null(splitby)){
     splitby = "Total"
   } else if (!is.null(cor_type)){
@@ -24,6 +25,7 @@ to_latex = function(tab, caption, align, len, splitby, float, booktabs, cor_type
     splitby = paste(cor_type2, "Correlations")
   } else if (is.null(cor_type) & !is.null(splitby)) {
     splitby = gsub("`", "", paste(splitby))
+    splitby = gsub("%", "\\%", splitby)
   }
   
   tab[] = lapply(tab, function(x) gsub("%", "\\%", x, fixed = TRUE))
@@ -32,10 +34,10 @@ to_latex = function(tab, caption, align, len, splitby, float, booktabs, cor_type
   out = capture.output({
     cat("\\begin{table}[", float, "] \n")
     cat("\\centering \n")
-    cat("\\caption{", caption, "}\n", sep = "")
+    cat("\\caption{", caption, "}", "\\label{", ifelse(is.null(label), "", label), "}\n", sep = "")
     cat("\\begin{tabular}{", align, "}\n")
     cat(hrule('top', booktabs))
-    cat(" & \\multicolumn{", paste0(len), "}{c}{", paste(splitby)[length(paste(splitby))], "}\\\\ \n")
+    cat(" & \\multicolumn{", paste0(len), "}{c}{", ifelse(is.null(splitby), "Total", splitby), "}\\\\ \n")
     
     if (is.null(cor_type)){
       cat(paste(names(tab), collapse = " & "), "\\\\", "\n")
@@ -67,7 +69,7 @@ to_latex = function(tab, caption, align, len, splitby, float, booktabs, cor_type
       )
     }
     cat(paste0(c(hrule('bottom', booktabs),
-      "\\end{tabular}",
+      "\\end{tabular}", 
       "\\end{table}\n"), collapse="\n"))
   })
   class(out) = c("latex2", "character", "table1")

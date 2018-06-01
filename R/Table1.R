@@ -6,7 +6,7 @@
 #' Can be used within the piping framework [see library(magrittr)].
 #' 
 #' @param .data the data.frame that is to be summarized
-#' @param ... variables in the data set that are to be summarized; unquoted names separated by commas (e.g. age, gender, race) or indices. If indices, it needs to be a single vector (e.g. c(1:5, 8, 9:20) instead of 1:5, 8, 9:20). As it is currently, it CANNOT handle both indices and unquoted names simultaneously.
+#' @param ... variables in the data set that are to be summarized; unquoted names separated by commas (e.g. age, gender, race) or indices. If indices, it needs to be a single vector (e.g. c(1:5, 8, 9:20) instead of 1:5, 8, 9:20). As it is currently, it CANNOT handle both indices and unquoted names simultaneously. Finally, any empty rows (where the row is NA for each variable selected) will be removed for an accurate n count.
 #' @param splitby the categorical variable to stratify (in formula form  \code{splitby = ~gender}), quoted \code{splitby = "gender"}, or bare \code{splitby = gender}); instead, \code{dplyr::group_by(...)} can be used
 #' @param FUN the function to be applied to summarize the numeric data; default is to report the means and standard deviations
 #' @param FUN2 a secondary function to be applied to summarize the numeric data; default is to report the medians and 25\% and 75\% quartiles
@@ -27,6 +27,7 @@
 #' @param align when \code{output != "text"}; option is passed to \code{knitr::kable}
 #' @param float the float applied to the table in Latex when output is \code{latex2}
 #' @param export character; when given, it exports the table to a CSV file to folder named "table1" in the working directory with the name of the given string (e.g., "myfile" will save to "myfile.csv")
+#' @param label for \code{output == "latex2"}, this provides a table reference label for latex
 #' 
 #' @details In defining \code{type}, 1. options are "pvalues" that display the p-values of the tests, "full" which also shows the test statistics, or "stars" which only displays stars to highlight significance with *** < .001 ** .01 * .05; and
 #' 2. "simple" then only percentages are shown for categorical variable and
@@ -98,7 +99,8 @@ table1 = function(.data,
                    caption = NULL, 
                    align = NULL,
                    float = "ht",
-                   export = NULL){
+                   export = NULL,
+                   label = NULL){
   UseMethod("table1", .data)
 }
 
@@ -128,7 +130,8 @@ table1.data.frame = function(.data,
                   caption = NULL, 
                   align = NULL,
                   float = "ht",
-                  export = NULL){
+                  export = NULL,
+                  label = NULL){
   
   ###################
   ## Preprocessing ##
@@ -148,7 +151,7 @@ table1.data.frame = function(.data,
   
   ##
   if (!is.null(NAkeep)){
-    warning("NAkeep is deprecated. Please use na.rm instead.\nNote that NAkeep = TRUE == na.rm = FALSE.")
+    warning("NAkeep is deprecated. Please use na.rm instead.\nNote that {NAkeep = TRUE} == {na.rm = FALSE}.")
     na.rm = !NAkeep
   }
   
@@ -181,9 +184,12 @@ table1.data.frame = function(.data,
   ########################
   ## Variable Selecting ##
   ########################
-  ## All Variables or Selected Variables using table1_()
+  ## All Variables or Selected Variables using selecting()
+  ##   and empty rows are removed from the data
   d = selecting(d_=.data, ...)
-  
+  if (!is.null(attr(d, "empty_rows"))){ 
+    .data <- .data[-attr(d, "empty_rows"), ]}   ## keeps all data frames equal in rows
+  d <- data.frame(d)
   
   ### Naming of variables
   if (!is.null(var_names)){
@@ -193,6 +199,7 @@ table1.data.frame = function(.data,
   
   ## Splitby or group_by
   if (is.null(attr(.data, "vars"))){
+    
     ### Splitby Variable (adds the variable to d as "split")
     splitby = substitute(splitby)
     if (class(substitute(splitby)) == "name"){
@@ -208,11 +215,11 @@ table1.data.frame = function(.data,
     ## For print method
     if (is.null(splitby)){
       splitting = NULL
-    } else{
+    } else {
       splitting = paste(splitby)[[length(paste(splitby))]]
     }
   } else {
-    message("Using a grouped data frame: default using the grouping variables and not splitby")
+    message("Using a grouped data frame: using the grouping variables and not splitby")
     if (length(attr(.data, "vars")) == 1){
       d$split = droplevels(as.factor(.data[attr(.data, "vars")][[1]]))
     } else {
@@ -299,7 +306,7 @@ table1.data.frame = function(.data,
       l1 = dim(final)[2]
       align = c("l", rep("c", (l1-1)))
     }
-    tab = to_latex(final, caption, align, len = length(levels(d$split)), splitby, float, booktabs)
+    tab = to_latex(final, caption, align, len = length(levels(d$split)), splitting, float, booktabs, label)
     tab
   ## Output from kable  
   } else if (output %in% c("latex", "markdown", "html", "pandoc", "rst")){

@@ -9,12 +9,12 @@ table1(.data, ..., splitby = NULL, FUN = NULL, FUN2 = NULL,
   type = "pvalues", output = "text", rounding_perc = 1, digits = 1,
   var_names = NULL, format_number = FALSE, NAkeep = NULL, na.rm = TRUE,
   booktabs = TRUE, caption = NULL, align = NULL, float = "ht",
-  export = NULL)
+  export = NULL, label = NULL)
 }
 \arguments{
 \item{.data}{the data.frame that is to be summarized}
 
-\item{...}{variables in the data set that are to be summarized; unquoted names separated by commas (e.g. age, gender, race) or indices. If indices, it needs to be a single vector (e.g. c(1:5, 8, 9:20) instead of 1:5, 8, 9:20). As it is currently, it CANNOT handle both indices and unquoted names simultaneously.}
+\item{...}{variables in the data set that are to be summarized; unquoted names separated by commas (e.g. age, gender, race) or indices. If indices, it needs to be a single vector (e.g. c(1:5, 8, 9:20) instead of 1:5, 8, 9:20). As it is currently, it CANNOT handle both indices and unquoted names simultaneously. Finally, any empty rows (where the row is NA for each variable selected) will be removed for an accurate n count.}
 
 \item{splitby}{the categorical variable to stratify (in formula form  \code{splitby = ~gender}), quoted \code{splitby = "gender"}, or bare \code{splitby = gender}); instead, \code{dplyr::group_by(...)} can be used}
 
@@ -55,6 +55,8 @@ table1(.data, ..., splitby = NULL, FUN = NULL, FUN2 = NULL,
 \item{float}{the float applied to the table in Latex when output is \code{latex2}}
 
 \item{export}{character; when given, it exports the table to a CSV file to folder named "table1" in the working directory with the name of the given string (e.g., "myfile" will save to "myfile.csv")}
+
+\item{label}{for \code{output == "latex2"}, this provides a table reference label for latex}
 }
 \value{
 A table with the number of observations, means/frequencies and standard deviations/percentages is returned. The object is a \code{table1} class object with a print method. Can be printed in \code{LaTex} form.
