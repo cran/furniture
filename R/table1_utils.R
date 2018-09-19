@@ -27,23 +27,12 @@ selecting <- function(d_, ...) {
   df <- lapply(seq_along(listed), 
                function(i) eval(listed[[i]], d_))
   
+  ## data frame with original row names
+  df <- data.frame(df)
+  
   ## Variable Names
   names1 <- names(listed)
-  to_name <- function(i) {
-    if (is.null(names1)) {
-      deparse(listed[[i]])
-    } else {
-      if (names1[[i]] == "") {
-        deparse(listed[[i]])
-      } else {
-        names1[[i]]
-      }
-    }
-  }
-  names(df) <- lapply(seq_along(listed), to_name)
-  
-  ## data frame with original row names
-  df <- data.frame(df, row.names = row.names(d_))
+  names(df) <- lapply(seq_along(listed), function(x) to_name(listed, names1, x))
   
   ## Remove any empty rows and Add attribute for splitby to work
   empty_rows <- which(apply(df, 1, function(x) all(is.na(x))))
@@ -57,6 +46,21 @@ selecting <- function(d_, ...) {
   ## Returned data.frame
   df
 }
+
+## Used in the selecting function
+to_name <- function(listed, names1, i) {
+  if (is.null(names1)) {
+    deparse(listed[[i]])
+  } else {
+    if (names1[[i]] == "") {
+      deparse(listed[[i]])
+    } else {
+      names1[[i]]
+    }
+  }
+}
+
+
 
 ## Does the summary of table1
 table1_summarizing = function(d, num_fun, num_fun2, second, row_wise, test, NAkeep){

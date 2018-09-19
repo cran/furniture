@@ -25,7 +25,7 @@
 #' @param booktabs when \code{output != "text"}; option is passed to \code{knitr::kable}
 #' @param caption when \code{output != "text"}; option is passed to \code{knitr::kable}
 #' @param align when \code{output != "text"}; option is passed to \code{knitr::kable}
-#' @param float the float applied to the table in Latex when output is \code{latex2}
+#' @param float the float applied to the table in Latex when output is \code{latex2}, default is "ht".
 #' @param export character; when given, it exports the table to a CSV file to folder named "table1" in the working directory with the name of the given string (e.g., "myfile" will save to "myfile.csv")
 #' @param label for \code{output == "latex2"}, this provides a table reference label for latex
 #' 
@@ -78,6 +78,8 @@
 #' @import stats
 #' @importFrom utils write.csv
 #' @importFrom knitr kable
+#' @importFrom dplyr group_by
+#' @importFrom dplyr mutate
 table1 = function(.data, 
                    ..., 
                    splitby = NULL, 
@@ -149,23 +151,20 @@ table1.data.frame = function(.data,
   ## checks
   .header_labels(header_labels, format_output)
   
-  ##
+  ## Deprecation
   if (!is.null(NAkeep)){
     warning("NAkeep is deprecated. Please use na.rm instead.\nNote that {NAkeep = TRUE} == {na.rm = FALSE}.")
     na.rm = !NAkeep
   }
+  ## Not yet deprecated
+  #if (!is.null(splitby))
+  #  warning("`splitby` is deprecated. Use dplyr::group_by() instead. It's use will continue through furniture 1.8.0")
   
-  ## Auto-detect piping
-  if (paste(.call)[[2]] == "."){
-    piping = TRUE
-  } else {
-    piping = FALSE
-  }
   ## Missing values in categorical variables
-  if (!na.rm){ 
-    NAkeep = "always" 
+  if (isTRUE(na.rm)){ 
+    NAkeep = "no" 
   } else {
-    NAkeep = "no"
+    NAkeep = "always"
   }
   ## Only pvalues are shown in simple or condensed versions
   if (simple | condense){
@@ -185,22 +184,20 @@ table1.data.frame = function(.data,
   ## Variable Selecting ##
   ########################
   ## All Variables or Selected Variables using selecting()
-  ##   and empty rows are removed from the data
-  d = selecting(d_=.data, ...)
-  if (!is.null(attr(d, "empty_rows"))){ 
-    .data <- .data[-attr(d, "empty_rows"), ]}   ## keeps all data frames equal in rows
-  d <- data.frame(d)
+  d <- selecting(data.frame(.data), ...) %>%
+    setNames(gsub("\\.", " ", names(.)))
   
   ### Naming of variables
   if (!is.null(var_names)){
     stopifnot(length(var_names)==length(names(d)))
-    names(d) = var_names
+    names(d) <- var_names
   }
   
   ## Splitby or group_by
-  if (is.null(attr(.data, "vars"))){
+  if (is.null(attr(.data, "vars")) && is.null(attr(.data, "groups"))){
     
     ### Splitby Variable (adds the variable to d as "split")
+    if (!is.null(splitby))
     splitby = substitute(splitby)
     if (class(substitute(splitby)) == "name"){
       splitby_ = eval(substitute(splitby), .data)
@@ -218,21 +215,52 @@ table1.data.frame = function(.data,
     } else {
       splitting = paste(splitby)[[length(paste(splitby))]]
     }
+    ## Remove any redundant grouping vars
+    vars <- length(paste(substitute(list(...))))
+    if (vars == 1){
+      d <- d[, -which(names(d) %in% splitting)]
+    }
   } else {
-    message("Using a grouped data frame: using the grouping variables and not splitby")
-    if (length(attr(.data, "vars")) == 1){
-      d$split = droplevels(as.factor(.data[attr(.data, "vars")][[1]]))
+    
+    ## Working around different versions of dplyr with group_by()
+    ## Older (0.7.6) uses "vars": produces the grouping name
+    ## Developmental one (0.7.9.9000) uses "groups" but it produces a nested table
+    groups <- attr(.data, "vars")
+    if (is.null(groups))
+      groups <- attr(.data, "groups") %>% names(.)
+    if (groups[length(groups)] == ".rows")
+      groups <- groups[-length(groups)]
+    
+    message(paste0("Using dplyr::group_by() groups: ", paste(groups, collapse = ", ")))
+    
+    if (length(groups) == 1){
+      d$split = droplevels(as.factor(.data[[groups]]))
     } else {
-      interacts = interaction(.data[attr(.data, "vars")], sep = "_")
+      interacts = interaction(.data[groups], sep = "_")
       d$split = factor(interacts)
     }
     ## For print method
-    if (is.null(attr(.data, "vars"))){
+    if (is.null(groups)){
       splitting = NULL
     } else{
-      splitting = paste(attr(.data, "vars"), collapse = ", ")
+      splitting = paste(groups, collapse = ", ")
+    }
+    ## Remove any redundant grouping vars
+    vars <- length(paste(substitute(list(...))))
+    if (vars == 1){
+      d <- d[, -which(names(d) %in% groups)]
     }
   }
+
+
+  ## Remove missing values?
+  if (isTRUE(na.rm)) {
+    d <- d[complete.cases(d), ]
+    if (nrow(d) == 0)
+      stop("No non-missing values in data frame with `na.rm = TRUE`", call. = FALSE)
+  }
+    
+  
   ## Splitby variable needs to have more than one level when test = TRUE
   if (test & length(levels(d$split))>1){
     test = TRUE
@@ -292,14 +320,10 @@ table1.data.frame = function(.data,
   
   ## regular text output
   if (grepl("text", output)){ 
-    class(final_l) = c("table1", "list")
-    if (piping){
-      print(final_l)
-      invisible(.data)
-    } else {
-      cat("\n", caption)
-      return(final_l)
-    } 
+    class(final_l) = c("table1")
+    cat("\n", caption)
+    return(final_l)
+
   ## Custom Latex Output
   } else if (output %in% "latex2"){
     if (is.null(align)){
@@ -310,22 +334,12 @@ table1.data.frame = function(.data,
     tab
   ## Output from kable  
   } else if (output %in% c("latex", "markdown", "html", "pandoc", "rst")){
-    if (piping){
-      kab = knitr::kable(final, format=output,
-                   booktabs = booktabs,
-                   caption = caption,
-                   align = align,
-                   row.names = FALSE)
-      print(kab)
-      invisible(.data)
-    } else {
-      kab = knitr::kable(final, format=output,
-                   booktabs = booktabs,
-                   caption = caption,
-                   align = align,
-                   row.names = FALSE)
-      return(kab)
-    }
+    kab = knitr::kable(final, format=output,
+                 booktabs = booktabs,
+                 caption = caption,
+                 align = align,
+                 row.names = FALSE)
+    return(kab)
   } else {
     stop(paste("Output of type", output, "not recognized"))
   }
@@ -401,4 +415,11 @@ print.table1 <- function(x, ...){
   cat("\u2500\n")
 }
 
-
+#' @export
+as.data.frame.table1 <- function(x, row.names = NULL, optional = FALSE, ...,
+                                 cut.names = FALSE, col.names = names(x), fix.empty.names = TRUE,
+                                 stringsAsFactors = default.stringsAsFactors()){
+  
+  as.data.frame.list(x)
+  
+}

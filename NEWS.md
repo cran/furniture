@@ -1,3 +1,12 @@
+# Version 1.8.0
+
+* When piping with `table1()`, it no longer returns the data set. This feature caused too many unexpected issues.
+* The class of `table1` is now no longer tied to the `data.frame`, for printing purposes. It is still possible to coerce to a `data.frame` using `as.data.frame()`.
+* Using the `var_names` argument is now deprecated. In its place, it is recommended to name the variable in place (e.g., `"General Health" = gen_health` will produce the label `General Health` in the table instead of the variable name of `gen_health`).
+* Fixed issue of having an underscore in a variable name in `output = "latex2"`.
+* Added new attaching message more like the tidyverse to provide information about function conflicts.
+* Added `mutate_rowmeans()` and `mutate_rowsums()` to more easily get the rowmeans/rowsums of a larger list of variables using the syntax that can be used within `dplyr::select()` (e.g., `var1:var30` for selecting `var1` through `var30` in the data frame).
+
 # Version 1.7.9
 
 Mainly bug fixes, including the removal of any empty rows. This allows for more accurate counts for the n's in really messy data. We also now re-export the pipe from `magrittr`.

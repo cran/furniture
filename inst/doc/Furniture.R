@@ -27,12 +27,10 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        test=TRUE)
 
 ## ----table1.3.2, message=FALSE, warning=FALSE----------------------------
-library(tidyverse)
-
 df %>%
   group_by(c) %>%
   table1(a, b, d, ifelse(a > 1, 1, 0), 
-       test=TRUE)
+        test=TRUE)
 
 ## ----table1.4------------------------------------------------------------
 table1(df, a, b, d, ifelse(a > 1, 1, 0),

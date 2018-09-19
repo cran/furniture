@@ -80,12 +80,14 @@ df %>%
   group_by(d) %>%
   table1(a, b, c,
          test = TRUE,
-         type = c("simple", "condensed")) %>%
-  ggplot(aes(x = b, y = a, group = d)) +
-    geom_point(aes(color = d), alpha =.25) +
-    geom_smooth(aes(color = d), method = "lm", se=FALSE) +
-    scale_color_manual(values = c("dodgerblue3", "chartreuse4"), name = "Group") +
-    theme_bw()
+         type = c("simple", "condensed"))
+
+## ----tidyverse2, fig.width=5, message=FALSE, warning=FALSE---------------
+df %>%
+  group_by(d, f) %>%
+  table1(a, b, c,
+         test = TRUE,
+         type = c("simple", "condensed"))
 
 ## ------------------------------------------------------------------------
 table1(df,
@@ -111,5 +113,5 @@ tab1 = table1(df,
               a, b, c,
               splitby = ~d,
               test = TRUE)
-data.frame(tab1)
+as.data.frame(tab1)
 

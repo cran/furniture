@@ -3,9 +3,11 @@ title: "Furniture"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Furniture}
-  %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
 date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(furniture)
 ```
 
-This vignette is current as of `furniture` `v1.7.2`.
+This vignette is current as of `furniture` `r packageVersion("furniture")`.
 
 ## Using `furniture`
 
@@ -67,14 +69,12 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
 
 The `splitby = ~factor(c)` stratifies the means and counts by a factor variable (in this case either control or treatment). When we use this we can also automatically compute tests of significance using `test=TRUE`. 
 
-We can also use it intuitively within the pipe:
+We can also use it intuitively within the pipe (for more about this, see the "Table 1" vignette):
 ```{r table1.3.2, message=FALSE, warning=FALSE}
-library(tidyverse)
-
 df %>%
   group_by(c) %>%
   table1(a, b, d, ifelse(a > 1, 1, 0), 
-       test=TRUE)
+        test=TRUE)
 ```
 In this case, we used the `group_by()` function from `dplyr` (within the `tidyverse`) and `table1()` knows to use that as the grouping variable in place of the `splitby` argument.
 
@@ -186,5 +186,5 @@ By default, it provides the total counts for the rows and columns with flexibili
 
 ## Conclusion
 
-The three functions: `table1`, `tableC`, `tableF`, and `washer` add simplicity to cleaning up and understanding your data. Use these pieces of furniture to make your quantitative life a bit easier.
+The four functions: `table1()`, `tableC()`, `tableF()`, and `washer()` add simplicity to cleaning up and understanding your data. Use these pieces of furniture to make your quantitative life a bit easier.
 
