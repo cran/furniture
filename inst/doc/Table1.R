@@ -1,5 +1,7 @@
 ## ----setup, include=FALSE------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
+
+## ------------------------------------------------------------------------
 library(furniture)
 
 ## ----structure, eval=FALSE-----------------------------------------------
@@ -7,7 +9,7 @@ library(furniture)
 
 ## ----data----------------------------------------------------------------
 set.seed(84332)
-## Create Ficticious Data containing several types of variables
+## Create Fictitious Data containing several types of variables
 df <- data.frame(a = sample(1:10000, 10000, replace = TRUE),
                  b = runif(10000) + rnorm(10000),
                  c = factor(sample(c(1,2,3,4,NA), 10000, replace=TRUE)),

@@ -17,7 +17,7 @@ table1(.data, ..., splitby = NULL, FUN = NULL, FUN2 = NULL,
 
 \item{...}{variables in the data set that are to be summarized; unquoted names separated by commas (e.g. age, gender, race) or indices. If indices, it needs to be a single vector (e.g. c(1:5, 8, 9:20) instead of 1:5, 8, 9:20). As it is currently, it CANNOT handle both indices and unquoted names simultaneously. Finally, any empty rows (where the row is NA for each variable selected) will be removed for an accurate n count.}
 
-\item{splitby}{the categorical variable to stratify (in formula form  \code{splitby = ~gender}), quoted \code{splitby = "gender"}, or bare \code{splitby = gender}); instead, \code{dplyr::group_by(...)} can be used}
+\item{splitby}{the categorical variable to stratify (in formula form \code{splitby = ~gender}) or quoted \code{splitby = "gender"}; instead, \code{dplyr::group_by(...)} can be used within a pipe (this is the default when the data object is a grouped data frame from \code{dplyr::group_by(...)}).}
 
 \item{FUN}{the function to be applied to summarize the numeric data; default is to report the means and standard deviations}
 
@@ -27,7 +27,7 @@ table1(.data, ..., splitby = NULL, FUN = NULL, FUN2 = NULL,
 
 \item{row_wise}{how to calculate percentages for factor variables when \code{splitby != NULL}: if \code{FALSE} calculates percentages by variable within groups; if \code{TRUE} calculates percentages across groups for one level of the factor variable.}
 
-\item{test}{logical; if set to \code{TRUE} then the appropriate bivariate tests of significance are performed if splitby has more than 1 level}
+\item{test}{logical; if set to \code{TRUE} then the appropriate bivariate tests of significance are performed if splitby has more than 1 level. A message is printed when the variances of the continuous variables being tested do not meet the assumption of Homogeneity of Variance (using Breusch-Pagan Test of Heteroskedasticity) and, therefore, the argument `var.equal = FALSE` is used in the test.}
 
 \item{header_labels}{a character vector that renames the header labels (e.g., the blank above the variables, the p-value label, and test value label).}
 
@@ -75,10 +75,9 @@ In defining \code{type}, 1. options are "pvalues" that display the p-values of t
 }
 \examples{
 
-\dontrun{
-## Ficticious Data ##
+## Fictitious Data ##
 library(furniture)
-library(tidyverse)
+library(dplyr)
 
 x  <- runif(1000)
 y  <- rnorm(1000)
@@ -95,14 +94,12 @@ table1(df, x, y, z,
        splitby = ~ a)
 table1(df, x, y, z,
        splitby = "a")
-table1(df, x, y, z,
-       splitby = a)
 
 ## With Piping
 df \%>\%
   table1(x, y, z, 
-         splitby = ~a) \%>\%
-  summarise(count = n())
+         splitby = ~a) 
+         
 df \%>\%
   group_by(a) \%>\%
   table1(x, y, z)
@@ -110,6 +107,5 @@ df \%>\%
 ## Adjust variables within function and assign name
 table1(df, 
        x2 = ifelse(x > 0, 1, 0), z = z)
-}        
 
 }

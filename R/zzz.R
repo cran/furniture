@@ -7,7 +7,10 @@
     .[(!grepl("^%", rownames(.))) &
         (!grepl("::", rownames(.))) &
         (!grepl("group_by", rownames(.))) &
-        (.$rowname != ".GlobalEnv"),] %>%
+        (!grepl("pt", rownames(.))) &
+        (!grepl("\\?", rownames(.))) &
+        (! .$rowname %in% c("package:utils", "package:stats", "package:base")) &
+        (grepl("package:", .$rowname)),] %>%
     data.frame
   
   confs$objects <- gsub("\\.[0-9]*$", "", rownames(confs))
@@ -17,11 +20,10 @@
     confs <- confs[conflict_type == "function", ]
   }
   
-  if (dim(confs)[1] == 0){
+  if (nrow(confs) == 0){
     confs_msg <- text_col(paste0(crayon::green(cli::symbol$tick), " No potential conflicts found"))
     helper_msg <- ""
   } else {
-    rownames(confs)
     confs_msg <- text_col(paste0(crayon::yellow(cli::symbol$cross),
                                  " The furniture::", confs$objects, "() function has the same name as ", 
                                  gsub("package:", "", confs$rowname), "::", confs$objects, " (", 
@@ -44,3 +46,12 @@
   }
   invisible()
 }
+
+#' Furniture for Quantitative Scientists
+#'
+#' Provides several functions, mainly tables, that can be used for exploring and reporting
+#' data analysis. 
+#'
+#' @docType package
+#' @name furniture
+"_PACKAGE"

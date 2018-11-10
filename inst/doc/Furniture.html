@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-09-18" />
+<meta name="date" content="2018-11-09" />
 
 <title>Furniture</title>
 
@@ -278,18 +278,22 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Furniture</h1>
-<h4 class="date"><em>2018-09-18</em></h4>
+<h4 class="date"><em>2018-11-09</em></h4>
 
 
 
-<p>This vignette is current as of <code>furniture</code> 1.8.0.</p>
+<p>This vignette is current as of <code>furniture</code> 1.8.7.</p>
 <div id="using-furniture" class="section level2">
 <h2>Using <code>furniture</code></h2>
-<p>We will first make a ficticious data set:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">a =</span> <span class="kw">rnorm</span>(<span class="dv">1000</span>, <span class="fl">1.5</span>, <span class="dv">2</span>), </a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">                 <span class="dt">b =</span> <span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">1000</span>, <span class="dv">1</span>), </a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">                 <span class="dt">c =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;control&quot;</span>, <span class="dv">400</span>), <span class="kw">rep</span>(<span class="st">&quot;Other&quot;</span>, <span class="dv">70</span>), <span class="kw">rep</span>(<span class="st">&quot;treatment&quot;</span>, <span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;None&quot;</span>, <span class="dv">30</span>)),</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">                 <span class="dt">d =</span> <span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>, <span class="dv">900</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>), <span class="kw">rep</span>(<span class="op">-</span><span class="dv">99</span>, <span class="dv">100</span>)))</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(furniture)</a></code></pre></div>
+<pre><code>## ── furniture 1.8.7 ───────────────────────────────────────────────────────────────────── learn more at tysonbarrett.com ──
+## ✔ furniture attached
+## ✔ No potential conflicts found</code></pre>
+<p>We will first make a fictitious data set:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">a =</span> <span class="kw">rnorm</span>(<span class="dv">1000</span>, <span class="fl">1.5</span>, <span class="dv">2</span>), </a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">                 <span class="dt">b =</span> <span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">1000</span>, <span class="dv">1</span>), </a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">                 <span class="dt">c =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;control&quot;</span>, <span class="dv">400</span>), <span class="kw">rep</span>(<span class="st">&quot;Other&quot;</span>, <span class="dv">70</span>), <span class="kw">rep</span>(<span class="st">&quot;treatment&quot;</span>, <span class="dv">500</span>), <span class="kw">rep</span>(<span class="st">&quot;None&quot;</span>, <span class="dv">30</span>)),</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">                 <span class="dt">d =</span> <span class="kw">c</span>(<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>, <span class="dv">900</span>, <span class="dt">replace=</span><span class="ot">TRUE</span>), <span class="kw">rep</span>(<span class="op">-</span><span class="dv">99</span>, <span class="dv">100</span>)))</a></code></pre></div>
 <p>There are four functions that we’ll demonstrate here:</p>
 <ol style="list-style-type: decimal">
 <li><code>washer</code></li>
@@ -301,147 +305,158 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="washer" class="section level2">
 <h2>Washer</h2>
 <p><code>washer</code> is a great function for quick data cleaning. In situations where there are placeholders, extra levels in a factor, or several values need to be changed to another.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">d =</span> <span class="kw">washer</span>(d, <span class="dv">-99</span>),  ## changes the placeholder -99 to NA</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">         <span class="dt">c =</span> <span class="kw">washer</span>(c, <span class="st">&quot;Other&quot;</span>, <span class="st">&quot;None&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;control&quot;</span>)) ## changes &quot;Other&quot; and &quot;None&quot; to &quot;Control&quot;</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">d =</span> <span class="kw">washer</span>(d, <span class="dv">-99</span>),  ## changes the placeholder -99 to NA</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">         <span class="dt">c =</span> <span class="kw">washer</span>(c, <span class="st">&quot;Other&quot;</span>, <span class="st">&quot;None&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;control&quot;</span>)) ## changes &quot;Other&quot; and &quot;None&quot; to &quot;Control&quot;</a></code></pre></div>
 </div>
 <div id="table1" class="section level2">
 <h2>Table1</h2>
 <p>Now that the data is “washed” we can start exploring and reporting.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, <span class="kw">factor</span>(c), d)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, <span class="kw">factor</span>(c), d)</a></code></pre></div>
+<pre><code>## Warning in table1.data.frame(df, a, b, factor(c), d): Not all variables have at least 2 unique values. Functionality of the following will be limited:
+##  -- type = 'condense' will not work
+##  -- test = TRUE will not work</code></pre>
 <pre><code>## 
 ## ────────────────────────────────
 ##               Mean/Count (SD/%)
 ##               n = 900          
 ##  a                             
-##               1.5 (2.0)        
+##               1.4 (2.0)        
 ##  b                             
 ##               450.5 (260.0)    
 ##  factor(c)                     
 ##     control   470 (52.2%)      
 ##     treatment 430 (47.8%)      
 ##  d                             
-##               497.7 (289.9)    
+##               498.0 (295.9)    
 ## ────────────────────────────────</code></pre>
 <p>The variables must be numeric or factor. Since we use a special type of evaluation (i.e. Non-Standard Evaluation) we can change the variables in the function (e.g., <code>factor(c)</code>). This can be extended to making a whole new variable in the function as well.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a></code></pre></div>
+<pre><code>## Warning in table1.data.frame(df, a, b, d, ifelse(a &gt; 1, 1, 0)): Not all variables have at least 2 unique values. Functionality of the following will be limited:
+##  -- type = 'condense' will not work
+##  -- test = TRUE will not work</code></pre>
 <pre><code>## 
 ## ───────────────────────────────────────
 ##                      Mean/Count (SD/%)
 ##                      n = 900          
 ##  a                                    
-##                      1.5 (2.0)        
+##                      1.4 (2.0)        
 ##  b                                    
 ##                      450.5 (260.0)    
 ##  d                                    
-##                      497.7 (289.9)    
+##                      498.0 (295.9)    
 ##  ifelse(a &gt; 1, 1, 0)                  
 ##                      0.6 (0.5)        
 ## ───────────────────────────────────────</code></pre>
 <p>This is just the beginning though. Two powerful things the function can do are shown below:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: b</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────────────────
 ##                                 factor(c) 
 ##                      control       treatment     P-Value
 ##                      n = 470       n = 430              
-##  a                                               0.586  
-##                      1.5 (2.0)     1.4 (2.1)            
+##  a                                               0.175  
+##                      1.3 (2.0)     1.5 (2.0)            
 ##  b                                               &lt;.001  
 ##                      235.5 (135.8) 685.5 (124.3)        
-##  d                                               0.098  
-##                      512.9 (292.2) 481.0 (286.8)        
-##  ifelse(a &gt; 1, 1, 0)                             0.402  
+##  d                                               0.474  
+##                      491.2 (295.3) 505.4 (296.8)        
+##  ifelse(a &gt; 1, 1, 0)                             0.906  
 ##                      0.6 (0.5)     0.6 (0.5)            
 ## ─────────────────────────────────────────────────────────</code></pre>
 <p>The <code>splitby = ~factor(c)</code> stratifies the means and counts by a factor variable (in this case either control or treatment). When we use this we can also automatically compute tests of significance using <code>test=TRUE</code>.</p>
 <p>We can also use it intuitively within the pipe (for more about this, see the “Table 1” vignette):</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(c) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">  </span><span class="kw">table1</span>(a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), </a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">        <span class="dt">test=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(c) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="st">  </span><span class="kw">table1</span>(a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), </a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">        <span class="dt">test=</span><span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>## 
 ## ─────────────────────────────────────────────────────────
 ##                                     c 
 ##                      control       treatment     P-Value
 ##                      n = 470       n = 430              
-##  a                                               0.586  
-##                      1.5 (2.0)     1.4 (2.1)            
+##  a                                               0.175  
+##                      1.3 (2.0)     1.5 (2.0)            
 ##  b                                               &lt;.001  
 ##                      235.5 (135.8) 685.5 (124.3)        
-##  d                                               0.098  
-##                      512.9 (292.2) 481.0 (286.8)        
-##  ifelse(a &gt; 1, 1, 0)                             0.402  
+##  d                                               0.474  
+##                      491.2 (295.3) 505.4 (296.8)        
+##  ifelse(a &gt; 1, 1, 0)                             0.906  
 ##                      0.6 (0.5)     0.6 (0.5)            
 ## ─────────────────────────────────────────────────────────</code></pre>
 <p>In this case, we used the <code>group_by()</code> function from <code>dplyr</code> (within the <code>tidyverse</code>) and <code>table1()</code> knows to use that as the grouping variable in place of the <code>splitby</code> argument.</p>
 <p>Finally, you can polish it quite a bit using a few other options. For example, you can do the following:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">       <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),</a>
-<a class="sourceLine" id="cb11-5" data-line-number="5">       <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
+<a class="sourceLine" id="cb16-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb16-4" data-line-number="4">       <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),</a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">       <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</a></code></pre></div>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: B</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────
 ##                     factor(c) 
 ##          control       treatment     P-Value
 ##          n = 470       n = 430              
-##  A       1.5 (2.0)     1.4 (2.1)     0.586  
+##  A       1.3 (2.0)     1.5 (2.0)     0.175  
 ##  B       235.5 (135.8) 685.5 (124.3) &lt;.001  
-##  D       512.9 (292.2) 481.0 (286.8) 0.098  
-##  New Var 0.6 (0.5)     0.6 (0.5)     0.402  
+##  D       491.2 (295.3) 505.4 (296.8) 0.474  
+##  New Var 0.6 (0.5)     0.6 (0.5)     0.906  
 ## ─────────────────────────────────────────────</code></pre>
 <p>Note that <code>var_names</code> can be used for more complex naming (e.g., with spaces, brackets) that otherwise cannot be used with data frames. Alternatively, for more simple naming, we can name them directly.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">table1</span>(df, <span class="dt">A =</span> a, <span class="dt">B =</span> b, <span class="dt">D =</span> d, <span class="dt">A2 =</span> <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">       <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">table1</span>(df, <span class="dt">A =</span> a, <span class="dt">B =</span> b, <span class="dt">D =</span> d, <span class="dt">A2 =</span> <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">       <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</a></code></pre></div>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: B</code></pre>
 <pre><code>## 
 ## ────────────────────────────────────────
 ##                factor(c) 
 ##     control       treatment     P-Value
 ##     n = 470       n = 430              
-##  A  1.5 (2.0)     1.4 (2.1)     0.586  
+##  A  1.3 (2.0)     1.5 (2.0)     0.175  
 ##  B  235.5 (135.8) 685.5 (124.3) &lt;.001  
-##  D  512.9 (292.2) 481.0 (286.8) 0.098  
-##  A2 0.6 (0.5)     0.6 (0.5)     0.402  
+##  D  491.2 (295.3) 505.4 (296.8) 0.474  
+##  A2 0.6 (0.5)     0.6 (0.5)     0.906  
 ## ────────────────────────────────────────</code></pre>
 <p>You can also format the numbers (adding a comma for big numbers such as in 20,000 instead of 20000):</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
-<a class="sourceLine" id="cb15-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb15-4" data-line-number="4">       <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),</a>
-<a class="sourceLine" id="cb15-5" data-line-number="5">       <span class="dt">format_number =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">       <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5">       <span class="dt">format_number =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: B</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────
 ##                     factor(c) 
 ##          control       treatment     P-Value
 ##          n = 470       n = 430              
-##  A                                   0.586  
-##          1.5 (2.0)     1.4 (2.1)            
+##  A                                   0.175  
+##          1.3 (2.0)     1.5 (2.0)            
 ##  B                                   &lt;.001  
 ##          235.5 (135.8) 685.5 (124.3)        
-##  D                                   0.098  
-##          512.9 (292.2) 481.0 (286.8)        
-##  New Var                             0.402  
+##  D                                   0.474  
+##          491.2 (295.3) 505.4 (296.8)        
+##  New Var                             0.906  
 ##          0.6 (0.5)     0.6 (0.5)            
 ## ─────────────────────────────────────────────</code></pre>
 <p>The table can be exported directly to a folder in the working directory called “Table1”. Using <code>export</code>, we provide it with a string that will be the name of the CSV containing the formatted table.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
-<a class="sourceLine" id="cb17-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb17-4" data-line-number="4">       <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),</a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">       <span class="dt">format_number =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb17-6" data-line-number="6">       <span class="dt">export =</span> <span class="st">&quot;example_table1&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">       <span class="dt">var_names =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">       <span class="dt">format_number =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb25-6" data-line-number="6">       <span class="dt">export =</span> <span class="st">&quot;example_table1&quot;</span>)</a></code></pre></div>
 <p>This can also be outputted as a latex, markdown, or pandoc table (matching all the output types of <code>knitr::kable</code>). Below shows how to do a latex table (not using <code>kable</code> however, but a built-in function that provides the variable name at the top of the table):</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="st">&quot;new var&quot;</span> =<span class="st"> </span><span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb18-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
-<a class="sourceLine" id="cb18-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb18-4" data-line-number="4">       <span class="dt">output =</span> <span class="st">&quot;latex2&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="st">&quot;new var&quot;</span> =<span class="st"> </span><span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">       <span class="dt">output =</span> <span class="st">&quot;latex2&quot;</span>)</a></code></pre></div>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: b</code></pre>
 <pre><code>## \begin{table}[ ht ] 
 ## \centering 
 ## \caption{}\label{}
@@ -451,54 +466,55 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ##   &amp; control &amp; treatment &amp; P-Value \\ 
 ##   &amp; n = 470 &amp; n = 430 &amp;   \\ 
 ##  \midrule
-## a &amp;   &amp;   &amp; 0.586\\ 
-## \hspace{6pt}   &amp; 1.5 (2.0) &amp; 1.4 (2.1) &amp; \\ 
+## a &amp;   &amp;   &amp; 0.175\\ 
+## \hspace{6pt}   &amp; 1.3 (2.0) &amp; 1.5 (2.0) &amp; \\ 
 ## b &amp;   &amp;   &amp; &lt;.001\\ 
 ## \hspace{6pt}   &amp; 235.5 (135.8) &amp; 685.5 (124.3) &amp; \\ 
-## d &amp;   &amp;   &amp; 0.098\\ 
-## \hspace{6pt}   &amp; 512.9 (292.2) &amp; 481.0 (286.8) &amp; \\ 
-## new var &amp;   &amp;   &amp; 0.402\\ 
+## d &amp;   &amp;   &amp; 0.474\\ 
+## \hspace{6pt}   &amp; 491.2 (295.3) &amp; 505.4 (296.8) &amp; \\ 
+## new var &amp;   &amp;   &amp; 0.906\\ 
 ## \hspace{6pt}   &amp; 0.6 (0.5) &amp; 0.6 (0.5) &amp; \\ 
 ## \bottomrule
 ## 
 ## \end{tabular}
 ## \end{table}</code></pre>
 <p>Last item to show you regarding <code>table1()</code> is that it can be printed in a simplified and condensed form. This instead of reporting counts and percentages for categorical variables, it reports only percentages and the table has much less white space.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="st">&quot;new var&quot;</span> =<span class="st"> </span><span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
-<a class="sourceLine" id="cb20-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb20-4" data-line-number="4">       <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">table1</span>(df, a, b, d, <span class="st">&quot;new var&quot;</span> =<span class="st"> </span><span class="kw">ifelse</span>(a <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">       <span class="dt">splitby=</span><span class="op">~</span><span class="kw">factor</span>(c), </a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">       <span class="dt">test=</span><span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">       <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</a></code></pre></div>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: b</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────
 ##                     factor(c) 
 ##          control       treatment     P-Value
 ##          n = 470       n = 430              
-##  a       1.5 (2.0)     1.4 (2.1)     0.586  
+##  a       1.3 (2.0)     1.5 (2.0)     0.175  
 ##  b       235.5 (135.8) 685.5 (124.3) &lt;.001  
-##  d       512.9 (292.2) 481.0 (286.8) 0.098  
-##  new var 0.6 (0.5)     0.6 (0.5)     0.402  
+##  d       491.2 (295.3) 505.4 (296.8) 0.474  
+##  new var 0.6 (0.5)     0.6 (0.5)     0.906  
 ## ─────────────────────────────────────────────</code></pre>
 </div>
 <div id="table-c" class="section level2">
 <h2>Table C</h2>
-<p>This function is to create simple, beautiful correlation tables. The syntax is just like <code>table1()</code> in most respects. Below we include all the numberic variables to see their correlations. Since there are missing values in <code>d</code> we will use the natural <code>na.rm=TRUE</code>.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw">tableC</span>(df, </a>
-<a class="sourceLine" id="cb22-2" data-line-number="2">       a, b, d,</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">       <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<p>This function is to create simple, beautiful correlation tables. The syntax is just like <code>table1()</code> in most respects. Below we include all the numeric variables to see their correlations. Since there are missing values in <code>d</code> we will use the natural <code>na.rm=TRUE</code>.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="kw">tableC</span>(df, </a>
+<a class="sourceLine" id="cb32-2" data-line-number="2">       a, b, d,</a>
+<a class="sourceLine" id="cb32-3" data-line-number="3">       <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>## N = 900
 ## Note: pearson correlation (p-value).</code></pre>
 <pre><code>## 
-## ──────────────────────────────────────────
-##       [1]            [2]            [3]  
-##  [1]a 1.00                               
-##  [2]b 0.016 (0.637)  1.00                
-##  [3]d -0.047 (0.156) -0.063 (0.059) 1.00 
-## ──────────────────────────────────────────</code></pre>
+## ─────────────────────────────────────────
+##       [1]            [2]           [3]  
+##  [1]a 1.00                              
+##  [2]b 0.048 (0.152)  1.00               
+##  [3]d -0.043 (0.196) 0.027 (0.419) 1.00 
+## ─────────────────────────────────────────</code></pre>
 <p>All the adjustments that you can make in <code>table1()</code> can be done here as well. For example,</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">tableC</span>(df, </a>
-<a class="sourceLine" id="cb25-2" data-line-number="2">       <span class="st">&quot;A&quot;</span> =<span class="st"> </span>a, <span class="st">&quot;B&quot;</span> =<span class="st"> </span>b, <span class="st">&quot;D&quot;</span> =<span class="st"> </span>d,</a>
-<a class="sourceLine" id="cb25-3" data-line-number="3">       <span class="dt">na.rm =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb25-4" data-line-number="4">       <span class="dt">output =</span> <span class="st">&quot;html&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw">tableC</span>(df, </a>
+<a class="sourceLine" id="cb35-2" data-line-number="2">       <span class="st">&quot;A&quot;</span> =<span class="st"> </span>a, <span class="st">&quot;B&quot;</span> =<span class="st"> </span>b, <span class="st">&quot;D&quot;</span> =<span class="st"> </span>d,</a>
+<a class="sourceLine" id="cb35-3" data-line-number="3">       <span class="dt">na.rm =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb35-4" data-line-number="4">       <span class="dt">output =</span> <span class="st">&quot;html&quot;</span>)</a></code></pre></div>
 <pre><code>## N = 900
 ## Note: pearson correlation (p-value).</code></pre>
 <table>
@@ -535,7 +551,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 [2]B
 </td>
 <td>
-0.016 (0.637)
+0.048 (0.152)
 </td>
 <td>
 1.00
@@ -548,10 +564,10 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 [3]D
 </td>
 <td>
--0.047 (0.156)
+-0.043 (0.196)
 </td>
 <td>
--0.063 (0.059)
+0.027 (0.419)
 </td>
 <td>
 1.00
@@ -563,128 +579,156 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="table-f" class="section level2">
 <h2>Table F</h2>
 <p>This function is to create simple frequency tables. The syntax is just like <code>table1()</code> and <code>tableC()</code> in most respects, except that it uses only one variable instead of many.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">tableF</span>(df, a)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">tableF</span>(df, a)</a></code></pre></div>
 <pre><code>## 
 ## ────────────────────────────────────────────────
 ##  a                 Freq CumFreq Percent CumPerc
-##  -4.58833326416907 1    1       0.10%   0.10%  
-##  -4.2681806211863  1    2       0.10%   0.20%  
-##  -4.10694593907831 1    3       0.10%   0.30%  
-##  -4.06888207530587 1    4       0.10%   0.40%  
-##  -3.89982482536706 1    5       0.10%   0.50%  
-##  -3.66648969534525 1    6       0.10%   0.60%  
-##  -3.6230213881552  1    7       0.10%   0.70%  
-##  -3.56715381070997 1    8       0.10%   0.80%  
-##  -3.30221668730118 1    9       0.10%   0.90%  
-##  -3.1320973673824  1    10      0.10%   1.00%  
+##  -6.06854389847174 1    1       0.10%   0.10%  
+##  -4.59870780177374 1    2       0.10%   0.20%  
+##  -4.39999106831786 1    3       0.10%   0.30%  
+##  -4.3355290110824  1    4       0.10%   0.40%  
+##  -4.26409130883522 1    5       0.10%   0.50%  
+##  -4.21456194007474 1    6       0.10%   0.60%  
+##  -3.91353795578642 1    7       0.10%   0.70%  
+##  -3.69810331166103 1    8       0.10%   0.80%  
+##  -3.4747013136215  1    9       0.10%   0.90%  
+##  -3.22261544381869 1    10      0.10%   1.00%  
 ##  ...               ...  ...     ...     ...    
-##  6.32490539265969  1    990     0.10%   99.00% 
-##  6.39272936157848  1    991     0.10%   99.10% 
-##  6.52260008959609  1    992     0.10%   99.20% 
-##  6.73463900623428  1    993     0.10%   99.30% 
-##  6.74815148429737  1    994     0.10%   99.40% 
-##  6.75029080555514  1    995     0.10%   99.50% 
-##  6.78583472531746  1    996     0.10%   99.60% 
-##  7.00848651099001  1    997     0.10%   99.70% 
-##  7.34881238837803  1    998     0.10%   99.80% 
-##  7.5579557761497   1    999     0.10%   99.90% 
-##  8.44590941163299  1    1000    0.10%   100.00%
+##  6.09141091958925  1    990     0.10%   99.00% 
+##  6.09457449598144  1    991     0.10%   99.10% 
+##  6.13747367297418  1    992     0.10%   99.20% 
+##  6.16925139024937  1    993     0.10%   99.30% 
+##  6.24257835107323  1    994     0.10%   99.40% 
+##  6.25473003605268  1    995     0.10%   99.50% 
+##  6.34788620399537  1    996     0.10%   99.60% 
+##  6.60522460511998  1    997     0.10%   99.70% 
+##  6.78987487993941  1    998     0.10%   99.80% 
+##  6.82232479642124  1    999     0.10%   99.90% 
+##  7.11694144485614  1    1000    0.10%   100.00%
 ## ────────────────────────────────────────────────</code></pre>
 <p>Similarly to <code>table1()</code> we can use a <code>splitby</code> argument (or <code>group_by()</code>).</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">tableF</span>(df, d, <span class="dt">splitby =</span> c)</a></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">tableF</span>(df, d, <span class="dt">splitby =</span> c)</a></code></pre></div>
 <pre><code>## Variable:d</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────────────
 ##  control Freq CumFreq Percent CumPerc Valid CumValid
-##  2       2    2       0.40%   0.40%   0.43% 0.43%   
-##  4       1    3       0.20%   0.60%   0.21% 0.64%   
-##  5       1    4       0.20%   0.80%   0.21% 0.85%   
-##  6       1    5       0.20%   1.00%   0.21% 1.06%   
-##  9       1    6       0.20%   1.20%   0.21% 1.28%   
-##  10      1    7       0.20%   1.40%   0.21% 1.49%   
-##  11      1    8       0.20%   1.60%   0.21% 1.70%   
-##  17      2    10      0.40%   2.00%   0.43% 2.13%   
-##  18      1    11      0.20%   2.20%   0.21% 2.34%   
-##  20      1    12      0.20%   2.40%   0.21% 2.55%   
+##  3       1    1       0.20%   0.20%   0.21% 0.21%   
+##  4       1    2       0.20%   0.40%   0.21% 0.43%   
+##  9       2    4       0.40%   0.80%   0.43% 0.85%   
+##  10      1    5       0.20%   1.00%   0.21% 1.06%   
+##  11      3    8       0.60%   1.60%   0.64% 1.70%   
+##  16      1    9       0.20%   1.80%   0.21% 1.91%   
+##  17      2    11      0.40%   2.20%   0.43% 2.34%   
+##  23      2    13      0.40%   2.60%   0.43% 2.77%   
+##  25      1    14      0.20%   2.80%   0.21% 2.98%   
+##  27      1    15      0.20%   3.00%   0.21% 3.19%   
 ##  ...     ...  ...     ...     ...     ...   ...     
-##  979     3    459     0.60%   91.80%  0.64% 97.66%  
-##  984     1    460     0.20%   92.00%  0.21% 97.87%  
-##  986     1    461     0.20%   92.20%  0.21% 98.09%  
-##  987     1    462     0.20%   92.40%  0.21% 98.30%  
-##  991     2    464     0.40%   92.80%  0.43% 98.72%  
-##  993     2    466     0.40%   93.20%  0.43% 99.15%  
-##  994     1    467     0.20%   93.40%  0.21% 99.36%  
-##  996     1    468     0.20%   93.60%  0.21% 99.57%  
-##  998     1    469     0.20%   93.80%  0.21% 99.79%  
-##  999     1    470     0.20%   94.00%  0.21% 100.00% 
+##  967     1    456     0.20%   91.20%  0.21% 97.02%  
+##  970     1    457     0.20%   91.40%  0.21% 97.23%  
+##  975     3    460     0.60%   92.00%  0.64% 97.87%  
+##  976     1    461     0.20%   92.20%  0.21% 98.09%  
+##  985     2    463     0.40%   92.60%  0.43% 98.51%  
+##  989     1    464     0.20%   92.80%  0.21% 98.72%  
+##  992     2    466     0.40%   93.20%  0.43% 99.15%  
+##  995     1    467     0.20%   93.40%  0.21% 99.36%  
+##  997     2    469     0.40%   93.80%  0.43% 99.79%  
+##  998     1    470     0.20%   94.00%  0.21% 100.00% 
 ##  Missing 30   500     6.00%   100.00%               
 ## ─────────────────────────────────────────────────────
 ## 
 ## ───────────────────────────────────────────────────────
 ##  treatment Freq CumFreq Percent CumPerc Valid CumValid
-##  2         1    1       0.20%   0.20%   0.23% 0.23%   
+##  3         1    1       0.20%   0.20%   0.23% 0.23%   
 ##  4         1    2       0.20%   0.40%   0.23% 0.47%   
-##  7         1    3       0.20%   0.60%   0.23% 0.70%   
-##  10        1    4       0.20%   0.80%   0.23% 0.93%   
-##  11        1    5       0.20%   1.00%   0.23% 1.16%   
-##  16        2    7       0.40%   1.40%   0.47% 1.63%   
-##  21        1    8       0.20%   1.60%   0.23% 1.86%   
-##  22        2    10      0.40%   2.00%   0.47% 2.33%   
-##  24        1    11      0.20%   2.20%   0.23% 2.56%   
+##  10        1    3       0.20%   0.60%   0.23% 0.70%   
+##  12        1    4       0.20%   0.80%   0.23% 0.93%   
+##  15        1    5       0.20%   1.00%   0.23% 1.16%   
+##  19        2    7       0.40%   1.40%   0.47% 1.63%   
+##  20        1    8       0.20%   1.60%   0.23% 1.86%   
+##  21        1    9       0.20%   1.80%   0.23% 2.09%   
+##  23        2    11      0.40%   2.20%   0.47% 2.56%   
 ##  26        1    12      0.20%   2.40%   0.23% 2.79%   
 ##  ...       ...  ...     ...     ...     ...   ...     
-##  966       1    421     0.20%   84.20%  0.23% 97.91%  
-##  977       1    422     0.20%   84.40%  0.23% 98.14%  
-##  979       1    423     0.20%   84.60%  0.23% 98.37%  
-##  982       1    424     0.20%   84.80%  0.23% 98.60%  
-##  985       1    425     0.20%   85.00%  0.23% 98.84%  
-##  986       1    426     0.20%   85.20%  0.23% 99.07%  
-##  987       1    427     0.20%   85.40%  0.23% 99.30%  
-##  993       1    428     0.20%   85.60%  0.23% 99.53%  
+##  985       1    420     0.20%   84.00%  0.23% 97.67%  
+##  986       1    421     0.20%   84.20%  0.23% 97.91%  
+##  991       1    422     0.20%   84.40%  0.23% 98.14%  
+##  992       1    423     0.20%   84.60%  0.23% 98.37%  
+##  993       2    425     0.40%   85.00%  0.47% 98.84%  
+##  994       1    426     0.20%   85.20%  0.23% 99.07%  
+##  996       1    427     0.20%   85.40%  0.23% 99.30%  
+##  997       1    428     0.20%   85.60%  0.23% 99.53%  
 ##  999       1    429     0.20%   85.80%  0.23% 99.77%  
 ##  1000      1    430     0.20%   86.00%  0.23% 100.00% 
 ##  Missing   70   500     14.00%  100.00%               
 ## ───────────────────────────────────────────────────────</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb32-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(c) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb32-3" data-line-number="3"><span class="st">  </span><span class="kw">tableF</span>(d)</a></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" data-line-number="1">df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb42-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(c) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb42-3" data-line-number="3"><span class="st">  </span><span class="kw">tableF</span>(d)</a></code></pre></div>
+<pre><code>## Using dplyr::group_by() groups: c</code></pre>
+<pre><code>## Variable:d</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────────────
-##  d       Freq CumFreq Percent CumPerc Valid CumValid
-##  2       3    3       0.30%   0.30%   0.33% 0.33%   
-##  4       2    5       0.20%   0.50%   0.22% 0.56%   
-##  5       1    6       0.10%   0.60%   0.11% 0.67%   
-##  6       1    7       0.10%   0.70%   0.11% 0.78%   
-##  7       1    8       0.10%   0.80%   0.11% 0.89%   
-##  9       1    9       0.10%   0.90%   0.11% 1.00%   
-##  10      2    11      0.20%   1.10%   0.22% 1.22%   
-##  11      2    13      0.20%   1.30%   0.22% 1.44%   
-##  16      2    15      0.20%   1.50%   0.22% 1.67%   
-##  17      2    17      0.20%   1.70%   0.22% 1.89%   
+##  control Freq CumFreq Percent CumPerc Valid CumValid
+##  3       1    1       0.20%   0.20%   0.21% 0.21%   
+##  4       1    2       0.20%   0.40%   0.21% 0.43%   
+##  9       2    4       0.40%   0.80%   0.43% 0.85%   
+##  10      1    5       0.20%   1.00%   0.21% 1.06%   
+##  11      3    8       0.60%   1.60%   0.64% 1.70%   
+##  16      1    9       0.20%   1.80%   0.21% 1.91%   
+##  17      2    11      0.40%   2.20%   0.43% 2.34%   
+##  23      2    13      0.40%   2.60%   0.43% 2.77%   
+##  25      1    14      0.20%   2.80%   0.21% 2.98%   
+##  27      1    15      0.20%   3.00%   0.21% 3.19%   
 ##  ...     ...  ...     ...     ...     ...   ...     
-##  985     1    885     0.10%   88.50%  0.11% 98.33%  
-##  986     2    887     0.20%   88.70%  0.22% 98.56%  
-##  987     2    889     0.20%   88.90%  0.22% 98.78%  
-##  991     2    891     0.20%   89.10%  0.22% 99.00%  
-##  993     3    894     0.30%   89.40%  0.33% 99.33%  
-##  994     1    895     0.10%   89.50%  0.11% 99.44%  
-##  996     1    896     0.10%   89.60%  0.11% 99.56%  
-##  998     1    897     0.10%   89.70%  0.11% 99.67%  
-##  999     2    899     0.20%   89.90%  0.22% 99.89%  
-##  1000    1    900     0.10%   90.00%  0.11% 100.00% 
-##  Missing 100  1000    10.00%  100.00%               
-## ─────────────────────────────────────────────────────</code></pre>
+##  967     1    456     0.20%   91.20%  0.21% 97.02%  
+##  970     1    457     0.20%   91.40%  0.21% 97.23%  
+##  975     3    460     0.60%   92.00%  0.64% 97.87%  
+##  976     1    461     0.20%   92.20%  0.21% 98.09%  
+##  985     2    463     0.40%   92.60%  0.43% 98.51%  
+##  989     1    464     0.20%   92.80%  0.21% 98.72%  
+##  992     2    466     0.40%   93.20%  0.43% 99.15%  
+##  995     1    467     0.20%   93.40%  0.21% 99.36%  
+##  997     2    469     0.40%   93.80%  0.43% 99.79%  
+##  998     1    470     0.20%   94.00%  0.21% 100.00% 
+##  Missing 30   500     6.00%   100.00%               
+## ─────────────────────────────────────────────────────
+## 
+## ───────────────────────────────────────────────────────
+##  treatment Freq CumFreq Percent CumPerc Valid CumValid
+##  3         1    1       0.20%   0.20%   0.23% 0.23%   
+##  4         1    2       0.20%   0.40%   0.23% 0.47%   
+##  10        1    3       0.20%   0.60%   0.23% 0.70%   
+##  12        1    4       0.20%   0.80%   0.23% 0.93%   
+##  15        1    5       0.20%   1.00%   0.23% 1.16%   
+##  19        2    7       0.40%   1.40%   0.47% 1.63%   
+##  20        1    8       0.20%   1.60%   0.23% 1.86%   
+##  21        1    9       0.20%   1.80%   0.23% 2.09%   
+##  23        2    11      0.40%   2.20%   0.47% 2.56%   
+##  26        1    12      0.20%   2.40%   0.23% 2.79%   
+##  ...       ...  ...     ...     ...     ...   ...     
+##  985       1    420     0.20%   84.00%  0.23% 97.67%  
+##  986       1    421     0.20%   84.20%  0.23% 97.91%  
+##  991       1    422     0.20%   84.40%  0.23% 98.14%  
+##  992       1    423     0.20%   84.60%  0.23% 98.37%  
+##  993       2    425     0.40%   85.00%  0.47% 98.84%  
+##  994       1    426     0.20%   85.20%  0.23% 99.07%  
+##  996       1    427     0.20%   85.40%  0.23% 99.30%  
+##  997       1    428     0.20%   85.60%  0.23% 99.53%  
+##  999       1    429     0.20%   85.80%  0.23% 99.77%  
+##  1000      1    430     0.20%   86.00%  0.23% 100.00% 
+##  Missing   70   500     14.00%  100.00%               
+## ───────────────────────────────────────────────────────</code></pre>
 </div>
 <div id="table-x" class="section level2">
 <h2>Table X</h2>
-<p>Lastly, <code>tableX()</code> is a pipable two-way version of <code>table()</code> with a similar syntax to that of the rest of the <code>furniture</code> functions.</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1">df <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb34-2" data-line-number="2"><span class="st">  </span><span class="kw">tableX</span>(c, <span class="kw">ifelse</span>(d <span class="op">&gt;</span><span class="st"> </span><span class="dv">500</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a></code></pre></div>
+<p>Lastly, <code>tableX()</code> is a pipe-able two-way version of <code>table()</code> with a similar syntax to that of the rest of the <code>furniture</code> functions.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1">df <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb46-2" data-line-number="2"><span class="st">  </span><span class="kw">tableX</span>(c, <span class="kw">ifelse</span>(d <span class="op">&gt;</span><span class="st"> </span><span class="dv">500</span>, <span class="dv">1</span>, <span class="dv">0</span>))</a></code></pre></div>
 <pre><code>##            ifelse(d &gt; 500, 1, 0)
 ## c           0   1   Missing Total
-##   control   224 246 30      500  
-##   treatment 231 199 70      500  
-##   Total     455 445 100     1000</code></pre>
+##   control   239 231 30      500  
+##   treatment 213 217 70      500  
+##   Total     452 448 100     1000</code></pre>
 <p>By default, it provides the total counts for the rows and columns with flexibility as to what is displayed and where.</p>
 </div>
 <div id="conclusion" class="section level2">

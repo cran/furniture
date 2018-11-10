@@ -7,12 +7,12 @@
 #' 
 #' @param .data the data.frame that is to be summarized
 #' @param ... variables in the data set that are to be summarized; unquoted names separated by commas (e.g. age, gender, race) or indices. If indices, it needs to be a single vector (e.g. c(1:5, 8, 9:20) instead of 1:5, 8, 9:20). As it is currently, it CANNOT handle both indices and unquoted names simultaneously. Finally, any empty rows (where the row is NA for each variable selected) will be removed for an accurate n count.
-#' @param splitby the categorical variable to stratify (in formula form  \code{splitby = ~gender}), quoted \code{splitby = "gender"}, or bare \code{splitby = gender}); instead, \code{dplyr::group_by(...)} can be used
+#' @param splitby the categorical variable to stratify (in formula form \code{splitby = ~gender}) or quoted \code{splitby = "gender"}; instead, \code{dplyr::group_by(...)} can be used within a pipe (this is the default when the data object is a grouped data frame from \code{dplyr::group_by(...)}).
 #' @param FUN the function to be applied to summarize the numeric data; default is to report the means and standard deviations
 #' @param FUN2 a secondary function to be applied to summarize the numeric data; default is to report the medians and 25\% and 75\% quartiles
 #' @param second a vector or list of quoted continuous variables for which the \code{FUN2} should be applied
 #' @param row_wise how to calculate percentages for factor variables when \code{splitby != NULL}: if \code{FALSE} calculates percentages by variable within groups; if \code{TRUE} calculates percentages across groups for one level of the factor variable.
-#' @param test logical; if set to \code{TRUE} then the appropriate bivariate tests of significance are performed if splitby has more than 1 level
+#' @param test logical; if set to \code{TRUE} then the appropriate bivariate tests of significance are performed if splitby has more than 1 level. A message is printed when the variances of the continuous variables being tested do not meet the assumption of Homogeneity of Variance (using Breusch-Pagan Test of Heteroskedasticity) and, therefore, the argument `var.equal = FALSE` is used in the test.
 #' @param header_labels a character vector that renames the header labels (e.g., the blank above the variables, the p-value label, and test value label).
 #' @param type what is displayed in the table; a string or a vector of strings. Two main sections can be inputted: 1. if test = TRUE, can write "pvalues", "full", or "stars" and 2. can state "simple" and/or "condense". These are discussed in more depth in the details section below.
 #' @param output how the table is output; can be "text" or "text2" for regular console output or any of \code{kable()}'s options from \code{knitr} (e.g., "latex", "markdown", "pandoc"). A new option, \code{'latex2'}, although more limited, allows the variable name to show and has an overall better appearance.
@@ -37,10 +37,9 @@
 #'
 #' @examples 
 #' 
-#' \dontrun{
-#' ## Ficticious Data ##
+#' ## Fictitious Data ##
 #' library(furniture)
-#' library(tidyverse)
+#' library(dplyr)
 #' 
 #' x  <- runif(1000)
 #' y  <- rnorm(1000)
@@ -57,14 +56,12 @@
 #'        splitby = ~ a)
 #' table1(df, x, y, z,
 #'        splitby = "a")
-#' table1(df, x, y, z,
-#'        splitby = a)
 #' 
 #' ## With Piping
 #' df %>%
 #'   table1(x, y, z, 
-#'          splitby = ~a) %>%
-#'   summarise(count = n())
+#'          splitby = ~a) 
+#'          
 #' df %>%
 #'   group_by(a) %>%
 #'   table1(x, y, z)
@@ -72,10 +69,9 @@
 #' ## Adjust variables within function and assign name
 #' table1(df, 
 #'        x2 = ifelse(x > 0, 1, 0), z = z)
-#' }        
 #'
 #' @export
-#' @import stats
+#' @importFrom stats IQR addmargins complete.cases dchisq lm median model.frame oneway.test pt resid sd setNames t.test
 #' @importFrom utils write.csv
 #' @importFrom knitr kable
 #' @importFrom dplyr group_by
@@ -108,9 +104,10 @@ table1 = function(.data,
 
 
 #' @export
-#' @import stats
 #' @importFrom utils write.csv
 #' @importFrom knitr kable
+#' @importFrom forcats fct_drop
+#' @importFrom dplyr filter
 table1.data.frame = function(.data, 
                   ..., 
                   splitby = NULL, 
@@ -138,15 +135,15 @@ table1.data.frame = function(.data,
   ###################
   ## Preprocessing ##
   ###################
-  .call = match.call()
+  .call <- match.call()
   ## Test output
-  format_output = type[which(type %in% c("pvalue", "pvalues", "pval", "pvals", "p",
+  format_output <- type[which(type %in% c("pvalue", "pvalues", "pval", "pvals", "p",
                                           "full", "f",
                                           "stars", "s"))]
   ## Table type
-  cond_simp = .type_constructor(type)
-  condense  = cond_simp[[1]]
-  simple    = cond_simp[[2]]
+  cond_simp <- .type_constructor(type)
+  condense  <- cond_simp[[1]]
+  simple    <- cond_simp[[2]]
   
   ## checks
   .header_labels(header_labels, format_output)
@@ -154,31 +151,31 @@ table1.data.frame = function(.data,
   ## Deprecation
   if (!is.null(NAkeep)){
     warning("NAkeep is deprecated. Please use na.rm instead.\nNote that {NAkeep = TRUE} == {na.rm = FALSE}.")
-    na.rm = !NAkeep
+    na.rm <- !NAkeep
   }
   ## Not yet deprecated
   #if (!is.null(splitby))
-  #  warning("`splitby` is deprecated. Use dplyr::group_by() instead. It's use will continue through furniture 1.8.0")
+  #  warning("`splitby` is deprecated. Use dplyr::group_by() instead. It's use will continue until furniture 2.0.0")
   
   ## Missing values in categorical variables
   if (isTRUE(na.rm)){ 
-    NAkeep = "no" 
+    NAkeep <- "no" 
   } else {
-    NAkeep = "always"
+    NAkeep <- "always"
   }
   ## Only pvalues are shown in simple or condensed versions
   if (simple | condense){
-    format_output = "pvalue"
+    format_output <- "pvalue"
   }
   ## Formatting default functions
   if (format_number){
-    f1 = ","
+    f1 <- ","
   } else {
-    f1 = ""
+    f1 <- ""
   }
   ## Functions
-  num_fun  = .summary_functions1(FUN, format_number, digits)
-  num_fun2 = .summary_functions2(FUN2, format_number, digits)
+  num_fun  <- .summary_functions1(FUN, format_number, digits)
+  num_fun2 <- .summary_functions2(FUN2, format_number, digits)
 
   ########################
   ## Variable Selecting ##
@@ -198,28 +195,28 @@ table1.data.frame = function(.data,
     
     ### Splitby Variable (adds the variable to d as "split")
     if (!is.null(splitby))
-    splitby = substitute(splitby)
+      splitby <- substitute(splitby)
     if (class(substitute(splitby)) == "name"){
-      splitby_ = eval(substitute(splitby), .data)
+      splitby_ <- eval(substitute(splitby), .data)
     } else if (class(substitute(splitby)) == "call"){
-      splitby_ = model.frame(splitby, .data, na.action = "na.pass")[[1]]
+      splitby_ <- model.frame(splitby, .data, na.action = "na.pass")[[1]]
     } else if (class(substitute(splitby)) == "character"){
-      splitby_ = .data[[splitby]]
+      splitby_ <- .data[[splitby]]
     } else if(is.null(splitby)){
-      splitby_ = factor(1)
+      splitby_ <- factor(1)
     }
     d$split = factor(splitby_)
     ## For print method
     if (is.null(splitby)){
-      splitting = NULL
+      splitting <- NULL
     } else {
-      splitting = paste(splitby)[[length(paste(splitby))]]
+      splitting <- paste(splitby)[[length(paste(splitby))]]
     }
     ## Remove any redundant grouping vars
-    vars <- length(paste(substitute(list(...))))
-    if (vars == 1){
-      d <- d[, -which(names(d) %in% splitting)]
+    if (length(which(names(d) %in% splitby_)) != 0){
+      d <- d[, -which(names(d) %in% splitby_)]
     }
+
   } else {
     
     ## Working around different versions of dplyr with group_by()
@@ -234,81 +231,85 @@ table1.data.frame = function(.data,
     message(paste0("Using dplyr::group_by() groups: ", paste(groups, collapse = ", ")))
     
     if (length(groups) == 1){
-      d$split = droplevels(as.factor(.data[[groups]]))
+      d$split <- factor(.data[[groups]])
     } else {
-      interacts = interaction(.data[groups], sep = "_")
-      d$split = factor(interacts)
+      interacts <- interaction(.data[groups], sep = "_")
+      d$split <- factor(interacts)
     }
     ## For print method
     if (is.null(groups)){
-      splitting = NULL
+      splitting <- NULL
     } else{
-      splitting = paste(groups, collapse = ", ")
+      splitting <- paste(groups, collapse = ", ")
     }
     ## Remove any redundant grouping vars
-    vars <- length(paste(substitute(list(...))))
-    if (vars == 1){
+    if (length(which(names(d) %in% groups)) != 0){
       d <- d[, -which(names(d) %in% groups)]
     }
   }
 
-
+  
   ## Remove missing values?
   if (isTRUE(na.rm)) {
     d <- d[complete.cases(d), ]
     if (nrow(d) == 0)
       stop("No non-missing values in data frame with `na.rm = TRUE`", call. = FALSE)
   }
-    
+
   
   ## Splitby variable needs to have more than one level when test = TRUE
   if (test & length(levels(d$split))>1){
-    test = TRUE
+    test <- TRUE
   } else {
-    test = FALSE
+    test <- FALSE
+  }
+  
+  ## Does each variable have at least two levels?
+  if (! .more_than_one_value(d)){
+    warning("Not all variables have at least 2 unique values. Functionality of the following will be limited:\n -- type = 'condense' will not work\n -- test = TRUE will not work")
   }
   
   ####################################
   ## Observations and Header Labels ##
   ####################################
-  N = .obs_header(d, f1, format_output, test, output, header_labels)
-  
+  N <- .obs_header(d, f1, format_output, test, output, header_labels)
+
   ######################
   ## Summarizing Data ##
   ######################
-  summed = table1_summarizing(d, num_fun, num_fun2, second, row_wise, test, NAkeep)
-  tab    = summed[[1]]
-  tab2   = summed[[2]]
-  tests  = summed[[3]]
-  nams   = summed[[4]]
+  summed <- table1_summarizing(d, num_fun, num_fun2, second, row_wise, test, NAkeep)
+  tab    <- summed[[1]]
+  tab2   <- summed[[2]]
+  tests  <- summed[[3]]
+  nams   <- summed[[4]]
   
   ######################
   ## Formatting Table ## 
   ######################
   ## Not Condensed or Condensed
   if (!condense){
-    tabZ = table1_format_nocondense(d, tab, tab2, tests, test, NAkeep, rounding_perc, 
-                                    format_output, second, nams, simple, output, f1)
+    tabZ <- table1_format_nocondense(d, tab, tab2, tests, test, NAkeep, rounding_perc, 
+                                     format_output, second, nams, simple, output, f1)
   } else if (condense){
-    tabZ = table1_format_condense(d, tab, tab2, tests, test, NAkeep, rounding_perc, 
-                                  format_output, second, nams, simple, output, f1)
+    tabZ <- table1_format_condense(d, tab, tab2, tests, test, NAkeep, rounding_perc, 
+                                   format_output, second, nams, simple, output, f1)
   }
   ## Combine Aspects of the table
-  names(tabZ) = names(N)
-  tabZ = rbind(N, tabZ)
-  rem  = ifelse(is.na(tabZ[,2]), FALSE, TRUE)
-  final = tabZ[rem,]
-  final$` ` = as.character(final$` `)
+  names(tabZ) <- names(N)
+  tabZ <- rbind(N, tabZ)
+  rem <- ifelse(is.na(tabZ[,2]), FALSE, TRUE)
+  final <- tabZ[rem,]
+  final$` ` <- as.character(final$` `)
   
   ##################
   ## FINAL OUTPUT ##
   ##################
   if (length(levels(d$split)) == 1){
-    names(final)[2] = "Mean/Count (SD/%)"
+    names(final)[2] <- "Mean/Count (SD/%)"
   }
-  final_l = list("Table1"  = final)
-  attr(final_l, "splitby") = splitting
-  attr(final_l, "output") = output
+  final_l <- list("Table1" = final)
+  attr(final_l, "splitby") <- splitting
+  attr(final_l, "output") <- output
   
   ## Export Option
   if (!is.null(export)){
@@ -320,21 +321,21 @@ table1.data.frame = function(.data,
   
   ## regular text output
   if (grepl("text", output)){ 
-    class(final_l) = c("table1")
+    class(final_l) <- c("table1")
     cat("\n", caption)
     return(final_l)
 
   ## Custom Latex Output
   } else if (output %in% "latex2"){
     if (is.null(align)){
-      l1 = dim(final)[2]
-      align = c("l", rep("c", (l1-1)))
+      l1 <- dim(final)[2]
+      align <- c("l", rep("c", (l1-1)))
     }
-    tab = to_latex(final, caption, align, len = length(levels(d$split)), splitting, float, booktabs, label)
+    tab <- to_latex(final, caption, align, len = length(levels(d$split)), splitting, float, booktabs, label)
     tab
   ## Output from kable  
   } else if (output %in% c("latex", "markdown", "html", "pandoc", "rst")){
-    kab = knitr::kable(final, format=output,
+    kab <- knitr::kable(final, format=output,
                  booktabs = booktabs,
                  caption = caption,
                  align = align,
@@ -351,31 +352,31 @@ table1.data.frame = function(.data,
 print.table1 <- function(x, ...){
   max_col_width = max_col_width2 = list()
   ## Extract data set
-  x2 = as.data.frame(x[[1]])
+  x2 <- as.data.frame(x[[1]])
   
   ## Splitby Name and Location
   if (!is.null(attr(x, "splitby"))){
-    x3 = as.data.frame(x[[1]])
-    x4 = x3[,-1]
-    x5 = x3[, 1]
-    x4[] = sapply(x4, as.character)
-    x5[] = sapply(x5, as.character)
-    for (i in 1:dim(x4)[2]){
-      max_col_width2[[i]] = max(sapply(x4[[i]], nchar, type="width"))
+    x3 <- as.data.frame(x[[1]])
+    x4 <- x3[,-1]
+    x5 <- x3[, 1]
+    x4[] <- sapply(x4, as.character)
+    x5[] <- sapply(x5, as.character)
+    for (i in 1:ncol(x4)){
+      max_col_width2[[i]] <- max(sapply(x4[[i]], nchar, type="width"))
     }
-    max_col_width3 = max(sapply(x5, nchar, type="width"))
-    var_width = sum(ifelse(unlist(max_col_width2) > nchar(names(x4)), unlist(max_col_width2), nchar(names(x4)))) + 
+    max_col_width3 <- max(sapply(x5, nchar, type="width"))
+    var_width <- sum(ifelse(unlist(max_col_width2) > nchar(names(x4)), unlist(max_col_width2), nchar(names(x4)))) + 
       dim(x4)[2] - 1
-    first_width = sum(ifelse(unlist(max_col_width3) > nchar("  "), unlist(max_col_width3), nchar("  ")))
+    first_width <- sum(ifelse(unlist(max_col_width3) > nchar("  "), unlist(max_col_width3), nchar("  ")))
   }
 
-  x2[] = sapply(x2, as.character)
+  x2[] <- sapply(x2, as.character)
 
   ## Get width of table for lines
   for (i in 1:dim(x2)[2]){
     max_col_width[[i]] = max(sapply(x2[[i]], nchar, type="width"))
   }
-  tot_width = sum(ifelse(unlist(max_col_width) > nchar(names(x2)), unlist(max_col_width), nchar(names(x2)))) + 
+  tot_width <- sum(ifelse(unlist(max_col_width) > nchar(names(x2)), unlist(max_col_width), nchar(names(x2)))) + 
     dim(x2)[2] - 1
   
   ## Print top border
@@ -396,7 +397,7 @@ print.table1 <- function(x, ...){
   if (!is.null(attr(x, "output"))){
     if (attr(x, "output") == "text2"){
       ## Special "text2" formatting
-      x4 = rbind(x[[1]][1,],
+      x4 <- rbind(x[[1]][1,],
                  sapply(max_col_width, function(x) paste0(rep("-", times = x), collapse = "")),
                  x[[1]][2:dim(x[[1]])[1], ])
       print(x4, ..., row.names = FALSE, right = FALSE)
@@ -420,6 +421,7 @@ as.data.frame.table1 <- function(x, row.names = NULL, optional = FALSE, ...,
                                  cut.names = FALSE, col.names = names(x), fix.empty.names = TRUE,
                                  stringsAsFactors = default.stringsAsFactors()){
   
-  as.data.frame.list(x)
+  as.data.frame.list(x) %>%
+    setNames(., gsub("Table1\\.", "", names(.)))
   
 }

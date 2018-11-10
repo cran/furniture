@@ -1,6 +1,10 @@
+# Version 1.8.7
+
+A minor update to fix an error that occurred when only a single variable was being summarized. Some code formatting under the hood was adjusted and some minor adjustments to the documentations were also made. Also, a warning is produced if any of the variables have no variability since this causes problems with tests and other formatting. Finally, a message is printed for `test = TRUE` when the variances are assumed to be unequal (based on a test). This is communicated in the documentation.
+
 # Version 1.8.0
 
-* When piping with `table1()`, it no longer returns the data set. This feature caused too many unexpected issues.
+* When piping with `table1()`, it no longer returns the data frame. This feature caused too many unexpected issues. Instead, it returns the table.
 * The class of `table1` is now no longer tied to the `data.frame`, for printing purposes. It is still possible to coerce to a `data.frame` using `as.data.frame()`.
 * Using the `var_names` argument is now deprecated. In its place, it is recommended to name the variable in place (e.g., `"General Health" = gen_health` will produce the label `General Health` in the table instead of the variable name of `gen_health`).
 * Fixed issue of having an underscore in a variable name in `output = "latex2"`.
@@ -91,7 +95,7 @@ Enjoy!
 Three notable changes:
 
 1. A new function--`tableM`--has been added to the package. It produces a table much like `table1` but analyzes a variable with missingness.
-2. `table1` (and its related functons such as `simple_table1` and `tableM`) now has better formatting and has an additional option `output_type = "text2"` which provides lines to separate the header from the rest of the table.
+2. `table1` (and its related functions such as `simple_table1` and `tableM`) now has better formatting and has an additional option `output_type = "text2"` which provides lines to separate the header from the rest of the table.
 3. `table1` can give percentages based on the row using `row_wise = TRUE`. The default is giving percentages by column.
 
 Also, a bug fix:

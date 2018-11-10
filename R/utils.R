@@ -3,17 +3,17 @@
 ## Output type constructor
 .type_constructor = function(type){
   if (any(grepl("simp", type)) & any(grepl("cond", type))){
-    simple = TRUE
-    condense = TRUE
+    simple <- TRUE
+    condense <- TRUE
   } else if (any(grepl("cond", type))){
-    simple = FALSE
-    condense = TRUE
+    simple <- FALSE
+    condense <- TRUE
   } else if (any(grepl("simp", type))){
-    simple = TRUE
-    condense = FALSE
+    simple <- TRUE
+    condense <- FALSE
   } else {
-    simple = FALSE
-    condense = FALSE
+    simple <- FALSE
+    condense <- FALSE
   }
   list(condense, simple)
 }
@@ -22,11 +22,11 @@
 .header_labels = function(header_labels, format_output){
   if(!is.null(header_labels)){
     if (grepl("f|F", format_output)) { 
-      length_labels = 3
+      length_labels <- 3
     } else if (grepl("p|P", format_output)) { 
-      length_labels = 2
+      length_labels <- 2
     } else if (grepl("s|S", format_output)) { 
-      length_labels = 1
+      length_labels <- 1
     } else {
       stop("Type must be one of 'full', 'pvalues', or 'stars'.")
     }
@@ -37,52 +37,59 @@
   }
 }
 
+## More than one value per variable warning
+.more_than_one_value <- function(data){
+  lapply(data, function(x) length(unique(x)) > 1) %>%
+    unlist() %>%
+    all()
+}
+
 
 ## Observations and Header Labels
 .obs_header = function(d, f1, format_output, test, output, header_labels){
-  N   = t(tapply(d[[1]], d$split, length))
-  N[] = sapply(N, function(x) as.character(paste("n =", x)))
-  N = suppressWarnings(formatC(N, big.mark = f1, digits = 0, format = "f"))
+  N   <- t(tapply(d[[1]], d$split, length))
+  N[] <- sapply(N, function(x) as.character(paste("n =", x)))
+  N   <- suppressWarnings(formatC(N, big.mark = f1, digits = 0, format = "f"))
   ## Formatting the N line
   if (grepl("f|F", format_output) & test){
     if (is.null(header_labels)){
-      header_labels = c(" ", levels(d$split), "Test", "P-Value")
-      N = data.frame(" ", N, "", "")
-      names(N) = header_labels
+      header_labels <- c(" ", levels(d$split), "Test", "P-Value")
+      N <- data.frame(" ", N, "", "")
+      names(N) <- header_labels
     } else {
-      N = data.frame(" ", N, "", "")
-      names(N) = c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
+      N <- data.frame(" ", N, "", "")
+      names(N) <- c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
     }
   } else if ((grepl("p|P", format_output) | grepl("s|S", format_output)) & test){
-    N = data.frame(" ", N, " ") 
+    N <- data.frame(" ", N, " ") 
     if (grepl("p|P", format_output)){
       if (is.null(header_labels)){
-        header_labels = c(" ", levels(d$split), "P-Value")
-        names(N) = header_labels
+        header_labels <- c(" ", levels(d$split), "P-Value")
+        names(N) <- header_labels
       } else {
-        names(N) = c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
+        names(N) <- c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
       }
     } else {
       if (is.null(header_labels)){
-        header_labels = c(" ", levels(d$split), " ")
-        names(N) = header_labels
+        header_labels <- c(" ", levels(d$split), " ")
+        names(N) <- header_labels
       } else {
-        names(N) = c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
+        names(N) <- c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
       }
       
     }
   } else {
     if (is.null(header_labels)){
-      header_labels = c(" ", levels(d$split))
-      N = data.frame(" ", N)
-      names(N) = header_labels
+      header_labels <- c(" ", levels(d$split))
+      N <- data.frame(" ", N)
+      names(N) <- header_labels
     } else {
-      N = data.frame(" ", N)
-      names(N) = c(header_labels[1], levels(d$split))
+      N <- data.frame(" ", N)
+      names(N) <- c(header_labels[1], levels(d$split))
     }
 
   }
-  N[] = sapply(N, as.character)
+  N[] <- sapply(N, as.character)
   N
 }
 
@@ -91,9 +98,9 @@
 ## Formatting for default summaries
 .summary_functions1 = function(FUN, format_number, digits){
   if (format_number){
-    f1 = ","
+    f1 <- ","
   } else {
-    f1 = ""
+    f1 <- ""
   }
   ## Primary Function
   if(is.null(FUN)){
@@ -109,9 +116,9 @@
 }
 .summary_functions2 = function(FUN2, format_number, digits){
   if (format_number){
-    f1 = ","
+    f1 <- ","
   } else {
-    f1 = ""
+    f1 <- ""
   }
   ## Secondary Function
   if(is.null(FUN2)){
@@ -148,10 +155,10 @@ furniture_version <- function(x) {
   crayon::italic(paste0(version, collapse = "."))
 }
 
-search_conflicts <- function(path = search()){
+search_conflicts <- function(){
   
   ## Search for conflicts
-  confs <- conflicts(path,TRUE)
+  confs <- conflicts(detail = TRUE)
   ## Grab those with the furniture package
   furniture_conflicts <- confs$`package:furniture`
   
@@ -175,6 +182,7 @@ search_conflicts <- function(path = search()){
 
 ## Pipe
 `%>%` <- magrittr::`%>%`
+
 ## Group by
 group_by <- dplyr::group_by
 
