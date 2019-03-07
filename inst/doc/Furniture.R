@@ -64,14 +64,14 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
 
 ## ----table1.7------------------------------------------------------------
 table1(df, a, b, d, "new var" = ifelse(a > 1, 1, 0),
-       splitby=~factor(c), 
-       test=TRUE,
+       splitby = ~factor(c), 
+       test = TRUE,
        output = "latex2")
 
 ## ----simple_table1.1-----------------------------------------------------
 table1(df, a, b, d, "new var" = ifelse(a > 1, 1, 0),
-       splitby=~factor(c), 
-       test=TRUE,
+       splitby = ~factor(c), 
+       test = TRUE,
        type = c("simple", "condensed"))
 
 ## ----tableC.1------------------------------------------------------------

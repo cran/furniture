@@ -98,22 +98,15 @@ table1(df,
        test = TRUE)
 
 ## ---- warning=FALSE, message=FALSE---------------------------------------
-table1(df,
-       "A" = factor(ifelse(a > 1, 1, 0)), b, c,
-       splitby = ~d,
-       test = TRUE)
-
-## ---- warning=FALSE, message=FALSE---------------------------------------
-table1(df,
-       factor(ifelse(a > 1, 1, 0)), b, c,
-       splitby = ~d,
-       test = TRUE,
-       var_names = c("A New Variable", "B Variable", "C Variable"))
+df %>% 
+  group_by(d) %>% 
+  table1("A" = factor(ifelse(a > 500, 1, 0)), b, c,
+         test = TRUE)
 
 ## ----dataframe-----------------------------------------------------------
-tab1 = table1(df,
-              a, b, c,
-              splitby = ~d,
-              test = TRUE)
+tab1 <- table1(df,
+               a, b, c,
+               splitby = ~d,
+               test = TRUE)
 as.data.frame(tab1)
 

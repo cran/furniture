@@ -10,6 +10,7 @@
 #' @param splitby the categorical variable to stratify (in formula form \code{splitby = ~gender}) or quoted \code{splitby = "gender"}; instead, \code{dplyr::group_by(...)} can be used within a pipe (this is the default when the data object is a grouped data frame from \code{dplyr::group_by(...)}).
 #' @param FUN the function to be applied to summarize the numeric data; default is to report the means and standard deviations
 #' @param FUN2 a secondary function to be applied to summarize the numeric data; default is to report the medians and 25\% and 75\% quartiles
+#' @param total whether a total (not stratified with the \code{splitby} or \code{group_by()}) should also be reported in the table
 #' @param second a vector or list of quoted continuous variables for which the \code{FUN2} should be applied
 #' @param row_wise how to calculate percentages for factor variables when \code{splitby != NULL}: if \code{FALSE} calculates percentages by variable within groups; if \code{TRUE} calculates percentages across groups for one level of the factor variable.
 #' @param test logical; if set to \code{TRUE} then the appropriate bivariate tests of significance are performed if splitby has more than 1 level. A message is printed when the variances of the continuous variables being tested do not meet the assumption of Homogeneity of Variance (using Breusch-Pagan Test of Heteroskedasticity) and, therefore, the argument `var.equal = FALSE` is used in the test.
@@ -81,6 +82,7 @@ table1 = function(.data,
                    splitby = NULL, 
                    FUN = NULL,
                    FUN2 = NULL,
+                   total = FALSE,
                    second = NULL,
                    row_wise = FALSE, 
                    test = FALSE, 
@@ -113,6 +115,7 @@ table1.data.frame = function(.data,
                   splitby = NULL, 
                   FUN = NULL,
                   FUN2 = NULL,
+                  total = FALSE,
                   second = NULL,
                   row_wise = FALSE, 
                   test = FALSE, 
@@ -148,9 +151,10 @@ table1.data.frame = function(.data,
   ## checks
   .header_labels(header_labels, format_output)
   
-  ## Deprecation
+  ## Deprecation (drop in furniture 2.0.0)
   if (!is.null(NAkeep)){
-    warning("NAkeep is deprecated. Please use na.rm instead.\nNote that {NAkeep = TRUE} == {na.rm = FALSE}.")
+    warning("NAkeep is deprecated. Please use na.rm instead.\nNote that {NAkeep = TRUE} == {na.rm = FALSE}.", 
+            call. = FALSE)
     na.rm <- !NAkeep
   }
   ## Not yet deprecated
@@ -214,7 +218,7 @@ table1.data.frame = function(.data,
     }
     ## Remove any redundant grouping vars
     if (length(which(names(d) %in% splitby_)) != 0){
-      d <- d[, -which(names(d) %in% splitby_)]
+      d <- d[, -which(names(d) %in% splitby_), drop = FALSE]
     }
 
   } else {
@@ -244,17 +248,16 @@ table1.data.frame = function(.data,
     }
     ## Remove any redundant grouping vars
     if (length(which(names(d) %in% groups)) != 0){
-      d <- d[, -which(names(d) %in% groups)]
+      d <- d[, -which(names(d) %in% groups), drop = FALSE]
     }
   }
 
   
   ## Remove missing values?
-  if (isTRUE(na.rm)) {
-    d <- d[complete.cases(d), ]
-    if (nrow(d) == 0)
-      stop("No non-missing values in data frame with `na.rm = TRUE`", call. = FALSE)
-  }
+  if (isTRUE(na.rm))
+    d <- d[complete.cases(d), , drop = FALSE]
+  if (nrow(d) == 0)
+    stop("No non-missing values in data frame with `na.rm = TRUE`", call. = FALSE)
 
   
   ## Splitby variable needs to have more than one level when test = TRUE
@@ -266,18 +269,30 @@ table1.data.frame = function(.data,
   
   ## Does each variable have at least two levels?
   if (! .more_than_one_value(d)){
-    warning("Not all variables have at least 2 unique values. Functionality of the following will be limited:\n -- type = 'condense' will not work\n -- test = TRUE will not work")
+    warning(paste("Not all variables have at least 2 unique values.",
+                  "Functionality of the following will be limited:\n",
+                  " -- `type = 'condense'` will not work\n",
+                  " -- `test = TRUE` will not work"), 
+            call. = FALSE)
+  }
+  
+  if (isTRUE(total & test)){
+    message("The test is for the stratified data relationships.")
+  }
+  
+  if (isTRUE(levels(d$split) == 1 & total)){
+    total = FALSE
   }
   
   ####################################
   ## Observations and Header Labels ##
   ####################################
-  N <- .obs_header(d, f1, format_output, test, output, header_labels)
+  N <- .obs_header(d, f1, format_output, test, output, header_labels, total)
 
   ######################
   ## Summarizing Data ##
   ######################
-  summed <- table1_summarizing(d, num_fun, num_fun2, second, row_wise, test, NAkeep)
+  summed <- table1_summarizing(d, num_fun, num_fun2, second, row_wise, test, NAkeep, total)
   tab    <- summed[[1]]
   tab2   <- summed[[2]]
   tests  <- summed[[3]]
@@ -289,10 +304,10 @@ table1.data.frame = function(.data,
   ## Not Condensed or Condensed
   if (!condense){
     tabZ <- table1_format_nocondense(d, tab, tab2, tests, test, NAkeep, rounding_perc, 
-                                     format_output, second, nams, simple, output, f1)
+                                     format_output, second, nams, simple, output, f1, total)
   } else if (condense){
     tabZ <- table1_format_condense(d, tab, tab2, tests, test, NAkeep, rounding_perc, 
-                                   format_output, second, nams, simple, output, f1)
+                                   format_output, second, nams, simple, output, f1, total)
   }
   ## Combine Aspects of the table
   names(tabZ) <- names(N)
@@ -310,6 +325,8 @@ table1.data.frame = function(.data,
   final_l <- list("Table1" = final)
   attr(final_l, "splitby") <- splitting
   attr(final_l, "output") <- output
+  attr(final_l, "tested") <- test
+  attr(final_l, "total") <- total
   
   ## Export Option
   if (!is.null(export)){
@@ -350,34 +367,53 @@ table1.data.frame = function(.data,
 
 #' @export
 print.table1 <- function(x, ...){
-  max_col_width = max_col_width2 = list()
+  max_col_width = max_col_width2 = max_col_width3 = list()
   ## Extract data set
   x2 <- as.data.frame(x[[1]])
+  
+  if (isTRUE(attr(x, "total"))){
+    first_part <- c(1,2)
+  } else {
+    first_part <- c(1)
+  }
+  
+  if (isTRUE(attr(x, "tested"))){
+    last_part <- ncol(x2)
+  } else {
+    last_part <- NULL
+  }
+  
+  x2[] <- sapply(x2, as.character)
+  
+  ## Get width of table for lines
+  for (i in 1:dim(x2)[2]){
+    max_col_width[[i]] <- max(sapply(x2[[i]], nchar, type="width"))
+  }
+  tot_width <- sum(ifelse(unlist(max_col_width) > nchar(names(x2)), unlist(max_col_width), nchar(names(x2)))) + 
+    dim(x2)[2] - 1
+  
+  if (isTRUE(attr(x, "test")))
+    max_col_width[[length(max_col_width)]] <- 7
+  
   
   ## Splitby Name and Location
   if (!is.null(attr(x, "splitby"))){
     x3 <- as.data.frame(x[[1]])
-    x4 <- x3[,-1]
-    x5 <- x3[, 1]
+    x4 <- x3[, -c(first_part, last_part), drop = FALSE]
+    x5 <- x3[, first_part, drop = FALSE]
     x4[] <- sapply(x4, as.character)
     x5[] <- sapply(x5, as.character)
     for (i in 1:ncol(x4)){
       max_col_width2[[i]] <- max(sapply(x4[[i]], nchar, type="width"))
     }
-    max_col_width3 <- max(sapply(x5, nchar, type="width"))
+    for (i in 1:ncol(x5)){
+      max_col_width3[[i]] <- max(sapply(x5[[i]], nchar, type="width"))
+    }
     var_width <- sum(ifelse(unlist(max_col_width2) > nchar(names(x4)), unlist(max_col_width2), nchar(names(x4)))) + 
       dim(x4)[2] - 1
     first_width <- sum(ifelse(unlist(max_col_width3) > nchar("  "), unlist(max_col_width3), nchar("  ")))
   }
 
-  x2[] <- sapply(x2, as.character)
-
-  ## Get width of table for lines
-  for (i in 1:dim(x2)[2]){
-    max_col_width[[i]] = max(sapply(x2[[i]], nchar, type="width"))
-  }
-  tot_width <- sum(ifelse(unlist(max_col_width) > nchar(names(x2)), unlist(max_col_width), nchar(names(x2)))) + 
-    dim(x2)[2] - 1
   
   ## Print top border
   cat("\n\u2500")
@@ -387,8 +423,8 @@ print.table1 <- function(x, ...){
   cat("\u2500\n") 
   ## Print splitby name
   if (!is.null(attr(x, "splitby"))){
-    len1 = nchar(gsub("`", "", attr(x, "splitby")))
-    for (i in 1:round(var_width/2 + first_width - len1/2)){
+    len1 <- nchar(gsub("`", "", attr(x, "splitby")))
+    for (i in 1:round(first_width + var_width/2 - len1/2)){
       cat(" ")
     }
     cat(gsub("`", "", attr(x, "splitby")), "\n")

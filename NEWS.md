@@ -1,3 +1,11 @@
+# Version 1.9.0
+
+Added the option to have a total column in `table1()` even when using a grouping variable (`total = TRUE` will activate this option). The resulting tests (if `test = TRUE`) will give results of just the bivariate comparisons (grouping variable with the specified variable).
+
+# Version 1.8.8
+
+Small bug where a warning message was printed too often was fixed.
+
 # Version 1.8.7
 
 A minor update to fix an error that occurred when only a single variable was being summarized. Some code formatting under the hood was adjusted and some minor adjustments to the documentations were also made. Also, a warning is produced if any of the variables have no variability since this causes problems with tests and other formatting. Finally, a message is printed for `test = TRUE` when the variances are assumed to be unequal (based on a test). This is communicated in the documentation.
@@ -56,7 +64,7 @@ Other small bug fixes.
 There are three notable changes in this update:
 
 1. Small bug fix when using piping and ask for one of the kable output options. This has now been fixed. Additionally, better error catching and improved function tests.
-2. The `long()` function has been added to the package. It is a wrapper of the `stats::reshape()` function with a direction set to "long", but has added benefits, including a bit clearner syntax, the ability to handle unbalanced data, and works well with the tidyverse.
+2. The `long()` function has been added to the package. It is a wrapper of the `stats::reshape()` function with a direction set to "long", but has added benefits, including a bit cleaner syntax, the ability to handle unbalanced data, and works well with the tidyverse.
 3. The `wide()` function has been added as well. It, like `long()`, is a wrapper of `reshape()` but with a set direction of "wide" and has added benefits as well.
 
 

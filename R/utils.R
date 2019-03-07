@@ -39,39 +39,57 @@
 
 ## More than one value per variable warning
 .more_than_one_value <- function(data){
-  lapply(data, function(x) length(unique(x)) > 1) %>%
+  subset(data, select=-split) %>%
+    lapply(function(x) length(unique(x)) > 1) %>%
     unlist() %>%
     all()
 }
 
 
 ## Observations and Header Labels
-.obs_header = function(d, f1, format_output, test, output, header_labels){
-  N   <- t(tapply(d[[1]], d$split, length))
+.obs_header = function(d, f1, format_output, test, output, header_labels, total){
+  
+  if (isTRUE(total)){
+    tot <- NROW(d[[1]])
+    nams <- c(" ", "Total", levels(d$split))
+    
+    if (!is.null(header_labels)){
+      header_labels <- c(header_labels[1], "Total", header_labels[2:length(header_labels)])
+    }
+    
+  } else {
+    tot <- NULL
+    nams <- c(" ", levels(d$split))
+  }
+  
+  N   <- c("Total" = tot, tapply(d[[1]], d$split, length))
   N[] <- sapply(N, function(x) as.character(paste("n =", x)))
-  N   <- suppressWarnings(formatC(N, big.mark = f1, digits = 0, format = "f"))
+  N   <- suppressWarnings(formatC(N, big.mark = f1, digits = 0, format = "f")) %>%
+    sapply(trimws, which = "left") %>%
+    t(.)
+  
   ## Formatting the N line
   if (grepl("f|F", format_output) & test){
     if (is.null(header_labels)){
-      header_labels <- c(" ", levels(d$split), "Test", "P-Value")
-      N <- data.frame(" ", N, "", "")
+      header_labels <- c(nams, "Test", "P-Value")
+      N <- data.frame("", N, "", "")
       names(N) <- header_labels
     } else {
-      N <- data.frame(" ", N, "", "")
+      N <- data.frame("", N, "", "")
       names(N) <- c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
     }
   } else if ((grepl("p|P", format_output) | grepl("s|S", format_output)) & test){
     N <- data.frame(" ", N, " ") 
     if (grepl("p|P", format_output)){
       if (is.null(header_labels)){
-        header_labels <- c(" ", levels(d$split), "P-Value")
+        header_labels <- c(nams, "P-Value")
         names(N) <- header_labels
       } else {
         names(N) <- c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
       }
     } else {
       if (is.null(header_labels)){
-        header_labels <- c(" ", levels(d$split), " ")
+        header_labels <- c(nams, " ")
         names(N) <- header_labels
       } else {
         names(N) <- c(header_labels[1], levels(d$split), header_labels[2:length(header_labels)])
@@ -80,11 +98,11 @@
     }
   } else {
     if (is.null(header_labels)){
-      header_labels <- c(" ", levels(d$split))
-      N <- data.frame(" ", N)
+      header_labels <- nams
+      N <- data.frame("", N)
       names(N) <- header_labels
     } else {
-      N <- data.frame(" ", N)
+      N <- data.frame("", N)
       names(N) <- c(header_labels[1], levels(d$split))
     }
 
