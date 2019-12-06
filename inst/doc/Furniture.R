@@ -11,7 +11,7 @@ df <- data.frame(a = rnorm(1000, 1.5, 2),
                  d = c(sample(1:1000, 900, replace=TRUE), rep(-99, 100)))
 
 ## ----washer, message=FALSE, warning=FALSE--------------------------------
-library(tidyverse)
+library(dplyr)
 
 df <- df %>%
   mutate(d = washer(d, -99),  ## changes the placeholder -99 to NA
@@ -33,6 +33,13 @@ df %>%
   group_by(c) %>%
   table1(a, b, d, ifelse(a > 1, 1, 0), 
         test=TRUE)
+
+## ----table1.3.3, message=FALSE, warning=FALSE----------------------------
+df %>%
+  group_by(c) %>%
+  table1(a, b, d, ifelse(a > 1, 1, 0), 
+        test=TRUE,
+        param=FALSE)
 
 ## ----table1.4------------------------------------------------------------
 table1(df, a, b, d, ifelse(a > 1, 1, 0),

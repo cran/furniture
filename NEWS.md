@@ -1,3 +1,23 @@
+# Version 1.9.5
+
+- Removed `tidyverse` as a dependency (changed to `dplyr` since many other package in the `tidyverse` were not needed)
+- Fixed printing bugs with `output = "latex2"`
+
+# Version 1.9.4
+
+Cleaned up the suggests and imports (removed `tidyverse` and a few others that were not necessary for the package to function). The message printed upon attachment is no longer displayed.
+
+# Version 1.9.3
+
+Added `rowmeans.n()` and `rowsums.n()` for row means and sums allowing `n` missing values across the row.
+
+
+# Version 1.9.2
+
+`table1()` now can do the non-parametric Kruskal-Wallis Rank Sum test (when `param = FALSE`). 
+
+Also fixed a small issue with `mutate_rowmeans()` and `mutate_rowsums()`.
+
 # Version 1.9.0
 
 Added the option to have a total column in `table1()` even when using a grouping variable (`total = TRUE` will activate this option). The resulting tests (if `test = TRUE`) will give results of just the bivariate comparisons (grouping variable with the specified variable).

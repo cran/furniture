@@ -75,7 +75,7 @@ table1(df,
        na.rm = FALSE)
 
 ## ----tidyverse, fig.width=5, message=FALSE, warning=FALSE----------------
-library(tidyverse)
+library(dplyr)
 
 df %>%
   filter(f == 1) %>%

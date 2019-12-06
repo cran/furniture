@@ -42,7 +42,7 @@ There are four functions that we'll demonstrate here:
 
 `washer` is a great function for quick data cleaning. In situations where there are placeholders, extra levels in a factor, or several values need to be changed to another.
 ```{r washer, message=FALSE, warning=FALSE}
-library(tidyverse)
+library(dplyr)
 
 df <- df %>%
   mutate(d = washer(d, -99),  ## changes the placeholder -99 to NA
@@ -81,6 +81,16 @@ df %>%
         test=TRUE)
 ```
 In this case, we used the `group_by()` function from `dplyr` (within the `tidyverse`) and `table1()` knows to use that as the grouping variable in place of the `splitby` argument.
+
+If the parametric tests (default) are not appropriate, you can set `param = FALSE`.
+```{r table1.3.3, message=FALSE, warning=FALSE}
+df %>%
+  group_by(c) %>%
+  table1(a, b, d, ifelse(a > 1, 1, 0), 
+        test=TRUE,
+        param=FALSE)
+```
+
 
 Finally, you can polish it quite a bit using a few other options. For example, you can do the following:
 ```{r table1.4}
