@@ -1,8 +1,8 @@
 Package: furniture
 Type: Package
 Title: Furniture for Quantitative Scientists
-Version: 1.9.5
-Date: 2019-12-05
+Version: 1.9.7
+Date: 2020-03-09
 Authors@R: c(person("Tyson S.", "Barrett",  
                     role=c("aut","cre"), 
                     email = "t.barrett@aggiemail.usu.edu", 
@@ -18,17 +18,17 @@ Description: Contains four main functions (i.e., four pieces of furniture):
     to simplify common tasks in quantitative analysis. Other data summary and cleaning tools 
     are also available.
 Depends: R (>= 2.10)
-Imports: knitr, magrittr, dplyr (>= 0.8.0), rstudioapi, tibble, crayon
+Imports: knitr, magrittr, dplyr (>= 0.8.0)
 Suggests: rmarkdown, testthat
 LazyData: true
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL-3
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 NeedsCompilation: no
-Packaged: 2019-12-06 07:18:50 UTC; tysonbarrett
+Packaged: 2020-03-09 18:51:14 UTC; tyson
 Author: Tyson S. Barrett [aut, cre] (<https://orcid.org/0000-0002-2137-1391>),
   Emily Brignone [aut],
   Daniel J. Laxman [aut]
 Repository: CRAN
-Date/Publication: 2019-12-06 07:40:02 UTC
+Date/Publication: 2020-03-09 19:20:02 UTC
