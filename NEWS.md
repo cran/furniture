@@ -1,3 +1,12 @@
+# Version 1.9.10
+
+- Fix bug related to updated `magrittr` package.
+- Upgraded to GitHub actions for continuous integration.
+
+# Version 1.9.8
+
+- Very minor adjustment for `as.data.frame.table1()` to longer use `default.stringsAsFactors()` for r version >= 4.1.0
+
 # Version 1.9.7
 
 - Removed `crayon`, `rstudioapi`, and `tibble` as dependencies (they were part of the attachment message that has been discontinued)

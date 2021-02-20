@@ -8,13 +8,22 @@
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-03-09" />
+<meta name="date" content="2021-02-20" />
 
 <title>Table 1</title>
 
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -106,6 +115,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+
 <style type="text/css">body {
 background-color: #fff;
 margin: 1em auto;
@@ -116,9 +126,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -287,7 +294,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -301,14 +309,14 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Table 1</h1>
-<h4 class="date">2020-03-09</h4>
+<h4 class="date">2021-02-20</h4>
 
 
 
 <div id="making-table-1" class="section level1">
 <h1>Making Table 1</h1>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(furniture)</a></code></pre></div>
-<p>This vignette demonstrates the main function of the <code>furniture</code> package–<code>table1()</code>. This vignette is current as of <code>furniture</code> 1.9.7.</p>
+<p>This vignette demonstrates the main function of the <code>furniture</code> package–<code>table1()</code>. This vignette is current as of <code>furniture</code> 1.9.10.</p>
 <p>The main parts of the <code>table1()</code> are below:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">table1</span>(.data, ..., splitby, row_wise, test, type, output, format_number, na.rm)</a></code></pre></div>
 <p>It contains several useful features for summarizing your data:</p>
