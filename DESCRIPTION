@@ -1,8 +1,8 @@
 Package: furniture
 Type: Package
 Title: Furniture for Quantitative Scientists
-Version: 1.9.12
-Date: 2022-04-14
+Version: 1.9.14
+Date: 2023-09-01
 Authors@R: c(person("Tyson S.", "Barrett",  
                     role=c("aut","cre"), 
                     email = "t.barrett88@gmail.com", 
@@ -24,11 +24,11 @@ LazyData: true
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL-3
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2022-04-15 01:23:15 UTC; tysonbarrett
+Packaged: 2023-09-04 20:46:38 UTC; tysonbarrett
 Author: Tyson S. Barrett [aut, cre] (<https://orcid.org/0000-0002-2137-1391>),
   Emily Brignone [aut],
   Daniel J. Laxman [aut]
 Repository: CRAN
-Date/Publication: 2022-04-15 08:42:32 UTC
+Date/Publication: 2023-09-05 11:00:06 UTC
