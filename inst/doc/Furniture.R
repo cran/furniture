@@ -62,12 +62,12 @@ table1(df, a, b, d, ifelse(a > 1, 1, 0),
        format_number = TRUE)
 
 ## ----table1.6, eval=FALSE-----------------------------------------------------
-#  table1(df, a, b, d, ifelse(a > 1, 1, 0),
-#         splitby=~factor(c),
-#         test=TRUE,
-#         var_names = c("A", "B", "D", "New Var"),
-#         format_number = TRUE,
-#         export = "example_table1")
+# table1(df, a, b, d, ifelse(a > 1, 1, 0),
+#        splitby=~factor(c),
+#        test=TRUE,
+#        var_names = c("A", "B", "D", "New Var"),
+#        format_number = TRUE,
+#        export = "example_table1")
 
 ## ----table1.7-----------------------------------------------------------------
 table1(df, a, b, d, "new var" = ifelse(a > 1, 1, 0),

@@ -6,7 +6,7 @@ selecting <- function(d_, ...) {
   if (length(listed) == 0)
     return(d_)
   ## If input are indices
-  if (length(listed) == 1 & any(grepl("^c\\(.*\\)$", listed) & length(listed[[1]]) != length(d_[[1]]))){
+  if (length(listed) == 1 && any(grepl("^c\\(.*\\)$", listed) & length(listed[[1]]) != length(d_[[1]]))){
     return(d_[, eval(listed[[1]]), drop = FALSE])
   } else if (length(listed) >= 1){
     ## Data Frame
@@ -57,8 +57,11 @@ to_name <- function(listed, names1, i) {
 table1_summarizing <- function(d, num_fun, num_fun2, second, row_wise, test, param, NAkeep, total){
   ## Summarizing The Data
   d <- data.frame(d, stringsAsFactors = TRUE)
-  tab = tab2 = tests = tests2 = nams = list()
+  tab <- tab2 <- tests <- nams <- list()
   nam <- names(d)
+
+  ## Track heteroskedasticity warnings
+  hetero_vars <- character(0)
   
   for (i in 1:(dim(d)[2]-1)){
     nams[[i]] <- names(d)[i]
@@ -123,33 +126,46 @@ table1_summarizing <- function(d, num_fun, num_fun2, second, row_wise, test, par
       
       if (test){
         ## Breusch-Pagan Test of Heteroskedasticity (equality of variances)
-        comp   <- complete.cases(d[[i]], d$split)
-        resids <- resid(lm(d[comp,i] ~ d$split[comp]))^2
-        r2     <- summary(lm(resids ~ d$split[comp]))$r.squared
-        lt     <- dchisq(length(resids)*r2, df = length(levels(d$split)))
+        comp <- complete.cases(d[[i]], d$split)
+        resids <- resid(lm(d[comp, i] ~ d$split[comp]))^2
+        r2 <- summary(lm(resids ~ d$split[comp]))$r.squared
+        lt <- dchisq(length(resids)*r2, df = length(levels(d$split)))
       }
       
       ## Parametric or Non-parametric
       if (param){
-        tests[[i]] <- parametric(d[[i]] ~ d$split, d$split, lt, test, nam, i)
+        param_result <- parametric(d[[i]] ~ d$split, d$split, lt, test, nam, i)
+        tests[[i]] <- param_result$test
+        if (param_result$hetero) {
+          hetero_vars <- c(hetero_vars, nam[i])
+        }
       } else {
         tests[[i]] <- nonparametric(d[[i]] ~ d$split)
       }
     }
   }
-  
+
+  ## Print consolidated heteroskedasticity message
+  if (length(hetero_vars) > 0) {
+    message("Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` for: ",
+            paste(hetero_vars, collapse = ", "))
+  }
+
   invisible(list(tab, tab2, tests, nams))
 }
 
 
 parametric <- function(formula, split, lt, test, nam, i){
-  
+
+  hetero_detected <- FALSE
+  test_result <- NULL
+
   ## For splitby vars with more than 2 levels
-  if (length(levels(split))>2 & test){
+  if (length(levels(split))>2 && test){
     if (lt<0.05){
-      message(paste0("Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in oneway.test() for: ", nam[i]))
+      hetero_detected <- TRUE
       ## Performs an approximate method of Welch (1951)
-      tryCatch(
+      test_result <- tryCatch(
         oneway.test(formula, var.equal=FALSE),
         error = function(cond){
           message(cond, "\n")
@@ -158,7 +174,7 @@ parametric <- function(formula, split, lt, test, nam, i){
       )
     } else {
       ## Performs a simple one-way ANOVA
-      tryCatch(
+      test_result <- tryCatch(
         oneway.test(formula, var.equal=TRUE),
         error = function(cond){
           message(cond, "\n")
@@ -167,12 +183,12 @@ parametric <- function(formula, split, lt, test, nam, i){
         }
       )
     }
-    
+
   } else if (test){
     if (lt<0.05){
-      message(paste0("Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: ", nam[i]))
+      hetero_detected <- TRUE
       ## Performs an approximate method of Welch (1951)
-      tryCatch(
+      test_result <- tryCatch(
         t.test(formula, var.equal=FALSE),
         error = function(cond){
           message(cond, "\n")
@@ -181,8 +197,8 @@ parametric <- function(formula, split, lt, test, nam, i){
         }
       )
     } else {
-      ## Performs a simple one-way ANOVA
-      tryCatch(
+      ## Performs a simple t-test
+      test_result <- tryCatch(
         t.test(formula, var.equal=TRUE),
         error = function(cond){
           message(cond, "\n")
@@ -190,9 +206,11 @@ parametric <- function(formula, split, lt, test, nam, i){
                       p.value = NA))
         }
       )
-    }    
+    }
   }
-  
+
+  return(list(test = test_result, hetero = hetero_detected))
+
 }
 
 nonparametric <- function(formula){
@@ -208,8 +226,8 @@ nonparametric <- function(formula){
 
 
 ## Formatting of table1 with no condense
-table1_format_nocondense = function(d, tab, tab2, tests, test, NAkeep, rounding_perc, 
-                                    format_output, second, nams, simple, output, f1, total, param){
+table1_format_nocondense = function(d, tab, tab2, tests, test, NAkeep, rounding_perc,
+                                    format_output, second, nams, simple, output, big_mark, total, param){
   d <- as.data.frame(d, stringsAsFactors = TRUE)
   
   if (isTRUE(total)){
@@ -223,13 +241,13 @@ table1_format_nocondense = function(d, tab, tab2, tests, test, NAkeep, rounding_
   if (test){
     if (grepl("f|F", format_output))
       tabZ <- data.frame(matrix(nrow=0, ncol=length(levels(d$split))+3+tot), stringsAsFactors = TRUE)
-    else if (grepl("p|P", format_output) | grepl("s|S", format_output))
+    else if (grepl("p|P", format_output) || grepl("s|S", format_output))
       tabZ <- data.frame(matrix(nrow=0, ncol=length(levels(d$split))+2+tot), stringsAsFactors = TRUE)
   } else {
     tabZ <- data.frame(matrix(nrow=0, ncol=length(levels(d$split))+1+tot), stringsAsFactors = TRUE)
   }
   
-  for (j in 1:length(tab)){
+  for (j in seq_along(tab)){
     if (is.factor(d[,j])){
       if (!grepl("^t", output)){
         tabX <- data.frame(paste("  ", names(table(d[,j], useNA=NAkeep))), stringsAsFactors = TRUE)
@@ -248,7 +266,7 @@ table1_format_nocondense = function(d, tab, tab2, tests, test, NAkeep, rounding_
       if (is.factor(d[,j])){
         if (!simple){
           tabX <- data.frame(tabX, 
-                             paste0(suppressWarnings(formatC(tab[[j]][[i]], big.mark = f1)), " (", 
+                             paste0(suppressWarnings(formatC(tab[[j]][[i]], big.mark = big_mark)), " (", 
                                     round(tab2[[j]][[i]]*100, rounding_perc), "%)"), 
                              stringsAsFactors = TRUE)
         } else if (simple){
@@ -268,7 +286,7 @@ table1_format_nocondense = function(d, tab, tab2, tests, test, NAkeep, rounding_
     the_test_label <- ifelse(rep(param, 2), c("F-Value:", "T-Test:"), c("Kruskal-Wallis:", "Kruskal-Wallis:"))
     
     ## If test == TRUE, tests of comparisons by split ##
-    if (test & grepl("f|F", format_output)){
+    if (test && grepl("f|F", format_output)){
       if (is.factor(d[,j])){
         n3 <- data.frame(names(d)[j], matrix(" ", ncol=length(levels(d$split))+tot, nrow=1), 
                          paste("Chi Square:", round(tests[[j]]$statistic,2)), 
@@ -289,7 +307,7 @@ table1_format_nocondense = function(d, tab, tab2, tests, test, NAkeep, rounding_
       tabW <- rbind(n3, tabX)
       tabZ <- rbind(tabZ, tabW)
       
-    } else if (test & grepl("p|P", format_output)){
+    } else if (test && grepl("p|P", format_output)){
       if (is.factor(d[,j])){
         n3 <- data.frame(names(d)[j], matrix(" ", ncol=length(levels(d$split))+tot, nrow=1),
                          paste(ifelse(tests[[j]]$p.value < .001, "<.001", round(tests[[j]]$p.value,3))), stringsAsFactors = TRUE)
@@ -307,7 +325,7 @@ table1_format_nocondense = function(d, tab, tab2, tests, test, NAkeep, rounding_
       tabW <- rbind(n3, tabX)
       tabZ <- rbind(tabZ, tabW)
       
-    } else if (test & grepl("s|S", format_output)){
+    } else if (test && grepl("s|S", format_output)){
       n3 <- data.frame(names(d)[j], matrix(" ", ncol=length(levels(d$split))+tot, nrow=1),
                        paste( ifelse(tests[[j]]$p.value < 0.001, "***", 
                               ifelse(tests[[j]]$p.value < 0.01,  "**", 
@@ -328,8 +346,8 @@ table1_format_nocondense = function(d, tab, tab2, tests, test, NAkeep, rounding_
 }
 
 ## Formatting of table1 with condense
-table1_format_condense = function(d, tab, tab2, tests, test, NAkeep, rounding_perc, 
-                                  format_output, second, nams, simple, output, f1, total){
+table1_format_condense = function(d, tab, tab2, tests, test, NAkeep, rounding_perc,
+                                  format_output, second, nams, simple, output, big_mark, total){
   d <- as.data.frame(d, stringsAsFactors = TRUE)
   
   if (isTRUE(total)){
@@ -341,13 +359,13 @@ table1_format_condense = function(d, tab, tab2, tests, test, NAkeep, rounding_pe
   }
   
   if (test){
-    if (grepl("p|P", format_output) | grepl("s|S", format_output))
+    if (grepl("p|P", format_output) || grepl("s|S", format_output))
       tabZ <- data.frame(matrix(nrow=0, ncol=length(levels(d$split))+2+tot), stringsAsFactors = TRUE)
   } else {
     tabZ <- data.frame(matrix(nrow=0, ncol=length(levels(d$split))+1+tot), stringsAsFactors = TRUE)
   }
   
-  for (j in 1:length(tab)){
+  for (j in seq_along(tab)){
     if (is.factor(d[,j])){
       if (length(levels(d[,j])) == 2){
         if (!grepl("text", output)){
@@ -385,11 +403,11 @@ table1_format_condense = function(d, tab, tab2, tests, test, NAkeep, rounding_pe
         } else {
           if (length(levels(d[,j])) == 2){
             tabX <- data.frame(tabX, 
-                               paste0(suppressWarnings(formatC(tab[[j]][[i]][2], big.mark = f1)), " (", 
+                               paste0(suppressWarnings(formatC(tab[[j]][[i]][2], big.mark = big_mark)), " (", 
                                       round(tab2[[j]][[i]][2]*100, 1), "%)"), stringsAsFactors = TRUE)
           } else {
             tabX <- data.frame(tabX, 
-                               paste0(suppressWarnings(formatC(tab[[j]][[i]], big.mark = f1)), " (", 
+                               paste0(suppressWarnings(formatC(tab[[j]][[i]], big.mark = big_mark)), " (", 
                                       round(tab2[[j]][[i]]*100, 1), "%)"), stringsAsFactors = TRUE)
           }
         }

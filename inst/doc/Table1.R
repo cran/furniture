@@ -5,7 +5,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(furniture)
 
 ## ----structure, eval=FALSE----------------------------------------------------
-#  table1(.data, ..., splitby, row_wise, test, type, output, format_number, na.rm)
+# table1(.data, ..., splitby, row_wise, test, type, output, format_number, na.rm)
 
 ## ----data---------------------------------------------------------------------
 set.seed(84332)
@@ -97,7 +97,7 @@ table1(df,
        splitby = ~d,
        test = TRUE)
 
-## ---- warning=FALSE, message=FALSE--------------------------------------------
+## ----warning=FALSE, message=FALSE---------------------------------------------
 df %>% 
   group_by(d) %>% 
   table1("A" = factor(ifelse(a > 500, 1, 0)), b, c,

@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2023-09-04" />
+<meta name="date" content="2026-01-17" />
 
 <title>Furniture</title>
 
@@ -49,6 +49,7 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -338,11 +339,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Furniture</h1>
-<h4 class="date">2023-09-04</h4>
+<h4 class="date">2026-01-17</h4>
 
 
 
-<p>This vignette is current as of <code>furniture</code> 1.9.14.</p>
+<p>This vignette is current as of <code>furniture</code> 1.11.0.</p>
 <div id="using-furniture" class="section level2">
 <h2>Using <code>furniture</code></h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(furniture)</span></code></pre></div>
@@ -380,14 +381,14 @@ reporting.</p>
 ##               Mean/Count (SD/%)
 ##               n = 900          
 ##  a                             
-##               1.5 (2.0)        
+##               1.4 (2.0)        
 ##  b                             
 ##               450.5 (260.0)    
 ##  factor(c)                     
 ##     control   470 (52.2%)      
 ##     treatment 430 (47.8%)      
 ##  d                             
-##               500.3 (293.0)    
+##               512.0 (287.7)    
 ## ────────────────────────────────</code></pre>
 <p>The variables must be numeric or factor. Since we use a special type
 of evaluation (i.e. Non-Standard Evaluation) we can change the variables
@@ -399,11 +400,11 @@ making a whole new variable in the function as well.</p>
 ##                      Mean/Count (SD/%)
 ##                      n = 900          
 ##  a                                    
-##                      1.5 (2.0)        
+##                      1.4 (2.0)        
 ##  b                                    
 ##                      450.5 (260.0)    
 ##  d                                    
-##                      500.3 (293.0)    
+##                      512.0 (287.7)    
 ##  ifelse(a &gt; 1, 1, 0)                  
 ##                      0.6 (0.5)        
 ## ───────────────────────────────────────</code></pre>
@@ -412,19 +413,19 @@ can do are shown below:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">table1</span>(df, a, b, d, <span class="fu">ifelse</span>(a <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>       <span class="at">splitby=</span><span class="sc">~</span><span class="fu">factor</span>(c), </span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>       <span class="at">test=</span><span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: b</code></pre>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` for: b, d</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────────────────
 ##                             factor(c) 
 ##                      control       treatment     P-Value
 ##                      n = 470       n = 430              
-##  a                                               0.364  
-##                      1.4 (2.0)     1.6 (2.0)            
+##  a                                               0.655  
+##                      1.4 (2.0)     1.4 (2.0)            
 ##  b                                               &lt;.001  
 ##                      235.5 (135.8) 685.5 (124.3)        
-##  d                                               0.567  
-##                      505.7 (288.3) 494.5 (298.2)        
-##  ifelse(a &gt; 1, 1, 0)                             0.448  
+##  d                                               0.348  
+##                      520.6 (298.8) 502.6 (275.2)        
+##  ifelse(a &gt; 1, 1, 0)                             0.935  
 ##                      0.6 (0.5)     0.6 (0.5)            
 ## ─────────────────────────────────────────────────────────</code></pre>
 <p>The <code>splitby = ~factor(c)</code> stratifies the means and counts
@@ -442,13 +443,13 @@ see the “Table 1” vignette):</p>
 ##                                 c 
 ##                      control       treatment     P-Value
 ##                      n = 470       n = 430              
-##  a                                               0.364  
-##                      1.4 (2.0)     1.6 (2.0)            
+##  a                                               0.655  
+##                      1.4 (2.0)     1.4 (2.0)            
 ##  b                                               &lt;.001  
 ##                      235.5 (135.8) 685.5 (124.3)        
-##  d                                               0.567  
-##                      505.7 (288.3) 494.5 (298.2)        
-##  ifelse(a &gt; 1, 1, 0)                             0.448  
+##  d                                               0.348  
+##                      520.6 (298.8) 502.6 (275.2)        
+##  ifelse(a &gt; 1, 1, 0)                             0.935  
 ##                      0.6 (0.5)     0.6 (0.5)            
 ## ─────────────────────────────────────────────────────────</code></pre>
 <p>In this case, we used the <code>group_by()</code> function from
@@ -467,13 +468,13 @@ place of the <code>splitby</code> argument.</p>
 ##                                 c 
 ##                      control       treatment     P-Value
 ##                      n = 470       n = 430              
-##  a                                               0.292  
-##                      1.4 (2.0)     1.6 (2.0)            
+##  a                                               0.636  
+##                      1.4 (2.0)     1.4 (2.0)            
 ##  b                                               &lt;.001  
 ##                      235.5 (135.8) 685.5 (124.3)        
-##  d                                               0.555  
-##                      505.7 (288.3) 494.5 (298.2)        
-##  ifelse(a &gt; 1, 1, 0)                             0.448  
+##  d                                               0.326  
+##                      520.6 (298.8) 502.6 (275.2)        
+##  ifelse(a &gt; 1, 1, 0)                             0.935  
 ##                      0.6 (0.5)     0.6 (0.5)            
 ## ─────────────────────────────────────────────────────────</code></pre>
 <p>Finally, you can polish it quite a bit using a few other options. For
@@ -483,16 +484,16 @@ example, you can do the following:</p>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>       <span class="at">test=</span><span class="cn">TRUE</span>,</span>
 <span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>       <span class="at">var_names =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),</span>
 <span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>       <span class="at">type =</span> <span class="fu">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span></code></pre></div>
-<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: B</code></pre>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` for: B, D</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────
 ##                 factor(c) 
 ##          control       treatment     P-Value
 ##          n = 470       n = 430              
-##  A       1.4 (2.0)     1.6 (2.0)     0.364  
+##  A       1.4 (2.0)     1.4 (2.0)     0.655  
 ##  B       235.5 (135.8) 685.5 (124.3) &lt;.001  
-##  D       505.7 (288.3) 494.5 (298.2) 0.567  
-##  New Var 0.6 (0.5)     0.6 (0.5)     0.448  
+##  D       520.6 (298.8) 502.6 (275.2) 0.348  
+##  New Var 0.6 (0.5)     0.6 (0.5)     0.935  
 ## ─────────────────────────────────────────────</code></pre>
 <p>Note that <code>var_names</code> can be used for more complex naming
 (e.g., with spaces, brackets) that otherwise cannot be used with data
@@ -502,16 +503,16 @@ directly.</p>
 <span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>       <span class="at">splitby=</span><span class="sc">~</span><span class="fu">factor</span>(c), </span>
 <span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>       <span class="at">test=</span><span class="cn">TRUE</span>,</span>
 <span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>       <span class="at">type =</span> <span class="fu">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span></code></pre></div>
-<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: B</code></pre>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` for: B, D</code></pre>
 <pre><code>## 
 ## ────────────────────────────────────────
 ##            factor(c) 
 ##     control       treatment     P-Value
 ##     n = 470       n = 430              
-##  A  1.4 (2.0)     1.6 (2.0)     0.364  
+##  A  1.4 (2.0)     1.4 (2.0)     0.655  
 ##  B  235.5 (135.8) 685.5 (124.3) &lt;.001  
-##  D  505.7 (288.3) 494.5 (298.2) 0.567  
-##  A2 0.6 (0.5)     0.6 (0.5)     0.448  
+##  D  520.6 (298.8) 502.6 (275.2) 0.348  
+##  A2 0.6 (0.5)     0.6 (0.5)     0.935  
 ## ────────────────────────────────────────</code></pre>
 <p>You can also format the numbers (adding a comma for big numbers such
 as in 20,000 instead of 20000):</p>
@@ -520,19 +521,19 @@ as in 20,000 instead of 20000):</p>
 <span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>       <span class="at">test=</span><span class="cn">TRUE</span>,</span>
 <span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>       <span class="at">var_names =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>, <span class="st">&quot;New Var&quot;</span>),</span>
 <span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>       <span class="at">format_number =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: B</code></pre>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` for: B, D</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────
 ##                 factor(c) 
 ##          control       treatment     P-Value
 ##          n = 470       n = 430              
-##  A                                   0.364  
-##          1.4 (2.0)     1.6 (2.0)            
+##  A                                   0.655  
+##          1.4 (2.0)     1.4 (2.0)            
 ##  B                                   &lt;.001  
 ##          235.5 (135.8) 685.5 (124.3)        
-##  D                                   0.567  
-##          505.7 (288.3) 494.5 (298.2)        
-##  New Var                             0.448  
+##  D                                   0.348  
+##          520.6 (298.8) 502.6 (275.2)        
+##  New Var                             0.935  
 ##          0.6 (0.5)     0.6 (0.5)            
 ## ─────────────────────────────────────────────</code></pre>
 <p>The table can be exported directly to a folder in the working
@@ -554,7 +555,7 @@ table):</p>
 <span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>       <span class="at">splitby =</span> <span class="sc">~</span><span class="fu">factor</span>(c), </span>
 <span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>       <span class="at">test =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>       <span class="at">output =</span> <span class="st">&quot;latex2&quot;</span>)</span></code></pre></div>
-<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: b</code></pre>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` for: b, d</code></pre>
 <pre><code>## \begin{table}[ ht ] 
 ## \centering 
 ## \caption{}\label{}
@@ -564,13 +565,13 @@ table):</p>
 ##   &amp; control &amp; treatment &amp; P-Value \\ 
 ##   &amp; n = 470 &amp; n = 430 &amp;   \\ 
 ##  \midrule
-## a &amp;   &amp;   &amp; 0.364\\ 
-## \hspace{6pt}   &amp; 1.4 (2.0) &amp; 1.6 (2.0) &amp; \\ 
+## a &amp;   &amp;   &amp; 0.655\\ 
+## \hspace{6pt}   &amp; 1.4 (2.0) &amp; 1.4 (2.0) &amp; \\ 
 ## b &amp;   &amp;   &amp; &lt;.001\\ 
 ## \hspace{6pt}   &amp; 235.5 (135.8) &amp; 685.5 (124.3) &amp; \\ 
-## d &amp;   &amp;   &amp; 0.567\\ 
-## \hspace{6pt}   &amp; 505.7 (288.3) &amp; 494.5 (298.2) &amp; \\ 
-## new var &amp;   &amp;   &amp; 0.448\\ 
+## d &amp;   &amp;   &amp; 0.348\\ 
+## \hspace{6pt}   &amp; 520.6 (298.8) &amp; 502.6 (275.2) &amp; \\ 
+## new var &amp;   &amp;   &amp; 0.935\\ 
 ## \hspace{6pt}   &amp; 0.6 (0.5) &amp; 0.6 (0.5) &amp; \\ 
 ## \bottomrule
 ## 
@@ -584,16 +585,16 @@ percentages and the table has much less white space.</p>
 <span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>       <span class="at">splitby =</span> <span class="sc">~</span><span class="fu">factor</span>(c), </span>
 <span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>       <span class="at">test =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>       <span class="at">type =</span> <span class="fu">c</span>(<span class="st">&quot;simple&quot;</span>, <span class="st">&quot;condensed&quot;</span>))</span></code></pre></div>
-<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` in t.test() for: b</code></pre>
+<pre><code>## Breusch-Pagan Test of Heteroskedasticity suggests `var.equal = FALSE` for: b, d</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────────
 ##                 factor(c) 
 ##          control       treatment     P-Value
 ##          n = 470       n = 430              
-##  a       1.4 (2.0)     1.6 (2.0)     0.364  
+##  a       1.4 (2.0)     1.4 (2.0)     0.655  
 ##  b       235.5 (135.8) 685.5 (124.3) &lt;.001  
-##  d       505.7 (288.3) 494.5 (298.2) 0.567  
-##  new var 0.6 (0.5)     0.6 (0.5)     0.448  
+##  d       520.6 (298.8) 502.6 (275.2) 0.348  
+##  new var 0.6 (0.5)     0.6 (0.5)     0.935  
 ## ─────────────────────────────────────────────</code></pre>
 </div>
 <div id="table-c" class="section level2">
@@ -610,10 +611,10 @@ are missing values in <code>d</code> we will use the natural
 ## Note: pearson correlation (p-value).</code></pre>
 <pre><code>## 
 ## ─────────────────────────────────────────
-##       [1]           [2]            [3]  
+##       [1]            [2]           [3]  
 ##  [1]a 1.00                              
-##  [2]b 0.041 (0.215) 1.00                
-##  [3]d 0.009 (0.781) -0.069 (0.038) 1.00 
+##  [2]b -0.024 (0.466) 1.00               
+##  [3]d -0.065 (0.052) 0.014 (0.671) 1.00 
 ## ─────────────────────────────────────────</code></pre>
 <p>All the adjustments that you can make in <code>table1()</code> can be
 done here as well. For example,</p>
@@ -657,7 +658,7 @@ done here as well. For example,</p>
 [2]B
 </td>
 <td>
-0.041 (0.215)
+-0.024 (0.466)
 </td>
 <td>
 1.00
@@ -670,10 +671,10 @@ done here as well. For example,</p>
 [3]D
 </td>
 <td>
-0.009 (0.781)
+-0.065 (0.052)
 </td>
 <td>
--0.069 (0.038)
+0.014 (0.671)
 </td>
 <td>
 1.00
@@ -691,28 +692,28 @@ respects, except that it uses only one variable instead of many.</p>
 <pre><code>## 
 ## ────────────────────────────────────────────────
 ##  a                 Freq CumFreq Percent CumPerc
-##  -4.63163278530117 1    1       0.10%   0.10%  
-##  -4.06865421576969 1    2       0.10%   0.20%  
-##  -3.84527844203444 1    3       0.10%   0.30%  
-##  -3.58563837197359 1    4       0.10%   0.40%  
-##  -3.53767477384542 1    5       0.10%   0.50%  
-##  -3.28913227159756 1    6       0.10%   0.60%  
-##  -3.22087461844618 1    7       0.10%   0.70%  
-##  -3.19007978696343 1    8       0.10%   0.80%  
-##  -3.15275096597904 1    9       0.10%   0.90%  
-##  -3.09564394452743 1    10      0.10%   1.00%  
+##  -4.17435891913293 1    1       0.10%   0.10%  
+##  -4.01263726439833 1    2       0.10%   0.20%  
+##  -3.97620944295714 1    3       0.10%   0.30%  
+##  -3.49368699125271 1    4       0.10%   0.40%  
+##  -3.32135621982618 1    5       0.10%   0.50%  
+##  -3.30827230035503 1    6       0.10%   0.60%  
+##  -3.2503945380831  1    7       0.10%   0.70%  
+##  -3.20780359488684 1    8       0.10%   0.80%  
+##  -3.13519344586223 1    9       0.10%   0.90%  
+##  -3.07433891707772 1    10      0.10%   1.00%  
 ##  ...               ...  ...     ...     ...    
-##  5.96116427060756  1    990     0.10%   99.00% 
-##  6.01414503213269  1    991     0.10%   99.10% 
-##  6.08524349579695  1    992     0.10%   99.20% 
-##  6.17036294175038  1    993     0.10%   99.30% 
-##  6.41610434542787  1    994     0.10%   99.40% 
-##  6.52558785448728  1    995     0.10%   99.50% 
-##  6.6528967541495   1    996     0.10%   99.60% 
-##  6.67211204808162  1    997     0.10%   99.70% 
-##  6.819841180341    1    998     0.10%   99.80% 
-##  7.45602363746625  1    999     0.10%   99.90% 
-##  8.41647680004542  1    1000    0.10%   100.00%
+##  6.05609845904781  1    990     0.10%   99.00% 
+##  6.13675641576816  1    991     0.10%   99.10% 
+##  6.14447908838593  1    992     0.10%   99.20% 
+##  6.22582707119055  1    993     0.10%   99.30% 
+##  6.46275563819662  1    994     0.10%   99.40% 
+##  6.48957941530052  1    995     0.10%   99.50% 
+##  6.62585903679748  1    996     0.10%   99.60% 
+##  6.90240334577203  1    997     0.10%   99.70% 
+##  7.13507540143187  1    998     0.10%   99.80% 
+##  7.72964580437935  1    999     0.10%   99.90% 
+##  8.02710749447921  1    1000    0.10%   100.00%
 ## ────────────────────────────────────────────────</code></pre>
 <p>Similarly to <code>table1()</code> we can use a <code>splitby</code>
 argument (or <code>group_by()</code>).</p>
@@ -721,53 +722,53 @@ argument (or <code>group_by()</code>).</p>
 <pre><code>## 
 ## ─────────────────────────────────────────────────────
 ##  control Freq CumFreq Percent CumPerc Valid CumValid
-##  1       3    3       0.60%   0.60%   0.64% 0.64%   
-##  11      1    4       0.20%   0.80%   0.21% 0.85%   
+##  8       2    2       0.40%   0.40%   0.43% 0.43%   
+##  13      1    3       0.20%   0.60%   0.21% 0.64%   
+##  15      1    4       0.20%   0.80%   0.21% 0.85%   
 ##  16      1    5       0.20%   1.00%   0.21% 1.06%   
-##  19      1    6       0.20%   1.20%   0.21% 1.28%   
-##  20      1    7       0.20%   1.40%   0.21% 1.49%   
-##  23      1    8       0.20%   1.60%   0.21% 1.70%   
-##  28      1    9       0.20%   1.80%   0.21% 1.91%   
-##  30      1    10      0.20%   2.00%   0.21% 2.13%   
-##  31      1    11      0.20%   2.20%   0.21% 2.34%   
-##  34      1    12      0.20%   2.40%   0.21% 2.55%   
+##  17      1    6       0.20%   1.20%   0.21% 1.28%   
+##  18      1    7       0.20%   1.40%   0.21% 1.49%   
+##  19      2    9       0.40%   1.80%   0.43% 1.91%   
+##  20      1    10      0.20%   2.00%   0.21% 2.13%   
+##  21      2    12      0.40%   2.40%   0.43% 2.55%   
+##  25      1    13      0.20%   2.60%   0.21% 2.77%   
 ##  ...     ...  ...     ...     ...     ...   ...     
-##  970     2    459     0.40%   91.80%  0.43% 97.66%  
-##  976     2    461     0.40%   92.20%  0.43% 98.09%  
-##  978     1    462     0.20%   92.40%  0.21% 98.30%  
-##  979     1    463     0.20%   92.60%  0.21% 98.51%  
-##  986     1    464     0.20%   92.80%  0.21% 98.72%  
+##  969     1    455     0.20%   91.00%  0.21% 96.81%  
+##  977     2    457     0.40%   91.40%  0.43% 97.23%  
+##  983     1    458     0.20%   91.60%  0.21% 97.45%  
+##  984     2    460     0.40%   92.00%  0.43% 97.87%  
+##  986     2    462     0.40%   92.40%  0.43% 98.30%  
+##  988     2    464     0.40%   92.80%  0.43% 98.72%  
 ##  990     1    465     0.20%   93.00%  0.21% 98.94%  
-##  993     2    467     0.40%   93.40%  0.43% 99.36%  
-##  994     1    468     0.20%   93.60%  0.21% 99.57%  
-##  997     1    469     0.20%   93.80%  0.21% 99.79%  
-##  1000    1    470     0.20%   94.00%  0.21% 100.00% 
+##  991     1    466     0.20%   93.20%  0.21% 99.15%  
+##  994     2    468     0.40%   93.60%  0.43% 99.57%  
+##  997     2    470     0.40%   94.00%  0.43% 100.00% 
 ##  Missing 30   500     6.00%   100.00%               
 ## ─────────────────────────────────────────────────────
 ## 
 ## ───────────────────────────────────────────────────────
 ##  treatment Freq CumFreq Percent CumPerc Valid CumValid
-##  2         1    1       0.20%   0.20%   0.23% 0.23%   
-##  3         2    3       0.40%   0.60%   0.47% 0.70%   
-##  6         2    5       0.40%   1.00%   0.47% 1.16%   
-##  8         1    6       0.20%   1.20%   0.23% 1.40%   
-##  9         1    7       0.20%   1.40%   0.23% 1.63%   
-##  11        1    8       0.20%   1.60%   0.23% 1.86%   
-##  13        1    9       0.20%   1.80%   0.23% 2.09%   
-##  16        1    10      0.20%   2.00%   0.23% 2.33%   
-##  19        1    11      0.20%   2.20%   0.23% 2.56%   
-##  22        1    12      0.20%   2.40%   0.23% 2.79%   
+##  1         1    1       0.20%   0.20%   0.23% 0.23%   
+##  10        2    3       0.40%   0.60%   0.47% 0.70%   
+##  15        1    4       0.20%   0.80%   0.23% 0.93%   
+##  21        2    6       0.40%   1.20%   0.47% 1.40%   
+##  24        1    7       0.20%   1.40%   0.23% 1.63%   
+##  32        2    9       0.40%   1.80%   0.47% 2.09%   
+##  35        1    10      0.20%   2.00%   0.23% 2.33%   
+##  36        1    11      0.20%   2.20%   0.23% 2.56%   
+##  38        1    12      0.20%   2.40%   0.23% 2.79%   
+##  39        1    13      0.20%   2.60%   0.23% 3.02%   
 ##  ...       ...  ...     ...     ...     ...   ...     
-##  980       1    420     0.20%   84.00%  0.23% 97.67%  
-##  981       1    421     0.20%   84.20%  0.23% 97.91%  
-##  984       1    422     0.20%   84.40%  0.23% 98.14%  
-##  985       1    423     0.20%   84.60%  0.23% 98.37%  
-##  987       1    424     0.20%   84.80%  0.23% 98.60%  
-##  992       2    426     0.40%   85.20%  0.47% 99.07%  
-##  995       1    427     0.20%   85.40%  0.23% 99.30%  
-##  996       1    428     0.20%   85.60%  0.23% 99.53%  
-##  997       1    429     0.20%   85.80%  0.23% 99.77%  
-##  1000      1    430     0.20%   86.00%  0.23% 100.00% 
+##  958       3    419     0.60%   83.80%  0.70% 97.44%  
+##  963       1    420     0.20%   84.00%  0.23% 97.67%  
+##  965       1    421     0.20%   84.20%  0.23% 97.91%  
+##  966       3    424     0.60%   84.80%  0.70% 98.60%  
+##  978       1    425     0.20%   85.00%  0.23% 98.84%  
+##  980       1    426     0.20%   85.20%  0.23% 99.07%  
+##  982       1    427     0.20%   85.40%  0.23% 99.30%  
+##  983       1    428     0.20%   85.60%  0.23% 99.53%  
+##  985       1    429     0.20%   85.80%  0.23% 99.77%  
+##  986       1    430     0.20%   86.00%  0.23% 100.00% 
 ##  Missing   70   500     14.00%  100.00%               
 ## ───────────────────────────────────────────────────────</code></pre>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
@@ -778,53 +779,53 @@ argument (or <code>group_by()</code>).</p>
 <pre><code>## 
 ## ─────────────────────────────────────────────────────
 ##  control Freq CumFreq Percent CumPerc Valid CumValid
-##  1       3    3       0.60%   0.60%   0.64% 0.64%   
-##  11      1    4       0.20%   0.80%   0.21% 0.85%   
+##  8       2    2       0.40%   0.40%   0.43% 0.43%   
+##  13      1    3       0.20%   0.60%   0.21% 0.64%   
+##  15      1    4       0.20%   0.80%   0.21% 0.85%   
 ##  16      1    5       0.20%   1.00%   0.21% 1.06%   
-##  19      1    6       0.20%   1.20%   0.21% 1.28%   
-##  20      1    7       0.20%   1.40%   0.21% 1.49%   
-##  23      1    8       0.20%   1.60%   0.21% 1.70%   
-##  28      1    9       0.20%   1.80%   0.21% 1.91%   
-##  30      1    10      0.20%   2.00%   0.21% 2.13%   
-##  31      1    11      0.20%   2.20%   0.21% 2.34%   
-##  34      1    12      0.20%   2.40%   0.21% 2.55%   
+##  17      1    6       0.20%   1.20%   0.21% 1.28%   
+##  18      1    7       0.20%   1.40%   0.21% 1.49%   
+##  19      2    9       0.40%   1.80%   0.43% 1.91%   
+##  20      1    10      0.20%   2.00%   0.21% 2.13%   
+##  21      2    12      0.40%   2.40%   0.43% 2.55%   
+##  25      1    13      0.20%   2.60%   0.21% 2.77%   
 ##  ...     ...  ...     ...     ...     ...   ...     
-##  970     2    459     0.40%   91.80%  0.43% 97.66%  
-##  976     2    461     0.40%   92.20%  0.43% 98.09%  
-##  978     1    462     0.20%   92.40%  0.21% 98.30%  
-##  979     1    463     0.20%   92.60%  0.21% 98.51%  
-##  986     1    464     0.20%   92.80%  0.21% 98.72%  
+##  969     1    455     0.20%   91.00%  0.21% 96.81%  
+##  977     2    457     0.40%   91.40%  0.43% 97.23%  
+##  983     1    458     0.20%   91.60%  0.21% 97.45%  
+##  984     2    460     0.40%   92.00%  0.43% 97.87%  
+##  986     2    462     0.40%   92.40%  0.43% 98.30%  
+##  988     2    464     0.40%   92.80%  0.43% 98.72%  
 ##  990     1    465     0.20%   93.00%  0.21% 98.94%  
-##  993     2    467     0.40%   93.40%  0.43% 99.36%  
-##  994     1    468     0.20%   93.60%  0.21% 99.57%  
-##  997     1    469     0.20%   93.80%  0.21% 99.79%  
-##  1000    1    470     0.20%   94.00%  0.21% 100.00% 
+##  991     1    466     0.20%   93.20%  0.21% 99.15%  
+##  994     2    468     0.40%   93.60%  0.43% 99.57%  
+##  997     2    470     0.40%   94.00%  0.43% 100.00% 
 ##  Missing 30   500     6.00%   100.00%               
 ## ─────────────────────────────────────────────────────
 ## 
 ## ───────────────────────────────────────────────────────
 ##  treatment Freq CumFreq Percent CumPerc Valid CumValid
-##  2         1    1       0.20%   0.20%   0.23% 0.23%   
-##  3         2    3       0.40%   0.60%   0.47% 0.70%   
-##  6         2    5       0.40%   1.00%   0.47% 1.16%   
-##  8         1    6       0.20%   1.20%   0.23% 1.40%   
-##  9         1    7       0.20%   1.40%   0.23% 1.63%   
-##  11        1    8       0.20%   1.60%   0.23% 1.86%   
-##  13        1    9       0.20%   1.80%   0.23% 2.09%   
-##  16        1    10      0.20%   2.00%   0.23% 2.33%   
-##  19        1    11      0.20%   2.20%   0.23% 2.56%   
-##  22        1    12      0.20%   2.40%   0.23% 2.79%   
+##  1         1    1       0.20%   0.20%   0.23% 0.23%   
+##  10        2    3       0.40%   0.60%   0.47% 0.70%   
+##  15        1    4       0.20%   0.80%   0.23% 0.93%   
+##  21        2    6       0.40%   1.20%   0.47% 1.40%   
+##  24        1    7       0.20%   1.40%   0.23% 1.63%   
+##  32        2    9       0.40%   1.80%   0.47% 2.09%   
+##  35        1    10      0.20%   2.00%   0.23% 2.33%   
+##  36        1    11      0.20%   2.20%   0.23% 2.56%   
+##  38        1    12      0.20%   2.40%   0.23% 2.79%   
+##  39        1    13      0.20%   2.60%   0.23% 3.02%   
 ##  ...       ...  ...     ...     ...     ...   ...     
-##  980       1    420     0.20%   84.00%  0.23% 97.67%  
-##  981       1    421     0.20%   84.20%  0.23% 97.91%  
-##  984       1    422     0.20%   84.40%  0.23% 98.14%  
-##  985       1    423     0.20%   84.60%  0.23% 98.37%  
-##  987       1    424     0.20%   84.80%  0.23% 98.60%  
-##  992       2    426     0.40%   85.20%  0.47% 99.07%  
-##  995       1    427     0.20%   85.40%  0.23% 99.30%  
-##  996       1    428     0.20%   85.60%  0.23% 99.53%  
-##  997       1    429     0.20%   85.80%  0.23% 99.77%  
-##  1000      1    430     0.20%   86.00%  0.23% 100.00% 
+##  958       3    419     0.60%   83.80%  0.70% 97.44%  
+##  963       1    420     0.20%   84.00%  0.23% 97.67%  
+##  965       1    421     0.20%   84.20%  0.23% 97.91%  
+##  966       3    424     0.60%   84.80%  0.70% 98.60%  
+##  978       1    425     0.20%   85.00%  0.23% 98.84%  
+##  980       1    426     0.20%   85.20%  0.23% 99.07%  
+##  982       1    427     0.20%   85.40%  0.23% 99.30%  
+##  983       1    428     0.20%   85.60%  0.23% 99.53%  
+##  985       1    429     0.20%   85.80%  0.23% 99.77%  
+##  986       1    430     0.20%   86.00%  0.23% 100.00% 
 ##  Missing   70   500     14.00%  100.00%               
 ## ───────────────────────────────────────────────────────</code></pre>
 </div>
@@ -837,9 +838,9 @@ argument (or <code>group_by()</code>).</p>
 <span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>  <span class="fu">tableX</span>(c, <span class="fu">ifelse</span>(d <span class="sc">&gt;</span> <span class="dv">500</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span></code></pre></div>
 <pre><code>##            ifelse(d &gt; 500, 1, 0)
 ## c           0   1   Missing Total
-##   control   225 245 30      500  
-##   treatment 215 215 70      500  
-##   Total     440 460 100     1000</code></pre>
+##   control   224 246 30      500  
+##   treatment 207 223 70      500  
+##   Total     431 469 100     1000</code></pre>
 <p>By default, it provides the total counts for the rows and columns
 with flexibility as to what is displayed and where.</p>
 </div>
